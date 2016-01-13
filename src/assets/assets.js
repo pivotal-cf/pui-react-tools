@@ -33,22 +33,13 @@ const Assets = {
         .pipe(plugins.livereload({start: true}));
     });
 
-    gulp.task('assets-html', function() {
-      return Assets.html().pipe(gulp.dest('tmp/public'));
-    });
-
-    gulp.task('watch-html', function(done) {
-      gulp.watch(['app/**/*.js'], ['assets-html']);
-      done();
-    });
-
-    gulp.task('assets-server', ['build-assets-server', 'watch-html'], Assets.tasks.buildAssetsServer);
+    gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
   },
 
   all({hotModule} = {}) {
     const watch = isDevelopment();
     const streams = [
-      Assets.html(),
+      Assets.html({watch}),
       !hotModule && Assets.javascript({watch}),
       Assets.sass({watch})
     ].filter(Boolean);
@@ -70,20 +61,28 @@ const Assets = {
       .pipe(plugins.cond(isProduction(), () => plugins.cssnano()));
   },
 
-  html() {
+  html({watch}) {
     let {entry = ['app/components/application.js'], hotModule, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
     const {assetPath} = require('./asset_helper');
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
+    if(watch) {
+      stream = stream.pipe(plugins.watch('app/**/*.js'));
+    }
+
+    const entryPath = path.join(process.cwd(), entry[0]);
+
     return stream
       .pipe(through2.obj(function(file, enc, callback) {
-        delete require.cache[require.resolve(file.path)];
+        console.log(file.path);
+        delete require.cache[require.resolve(entryPath)];
         delete require.cache[require.resolve('./layout')];
+
         const Layout = require('./layout');
         const assetConfig = isDevelopment() ? {assetHost: 'localhost', assetPort: 3001} : {};
         const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
         const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
-        const entryComponent = require(file.path);
+        const entryComponent = require(entryPath);
         const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
         const html = ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>);
         const indexFile = new File({
