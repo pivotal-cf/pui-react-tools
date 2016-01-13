@@ -74,9 +74,7 @@ const Assets = {
 
     return stream
       .pipe(through2.obj(function(file, enc, callback) {
-        console.log(file.path);
-        delete require.cache[require.resolve(entryPath)];
-        delete require.cache[require.resolve('./layout')];
+        [entryPath, file.path, './layout'].map(require.resolve).forEach(f => delete require.cache[f]);
 
         const Layout = require('./layout');
         const assetConfig = isDevelopment() ? {assetHost: 'localhost', assetPort: 3001} : {};
