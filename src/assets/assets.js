@@ -29,7 +29,7 @@ const Assets = {
 
     gulp.task('build-assets-server', ['clean-assets-server'], function() {
       Assets.all({hotModule: true})
-        .pipe(gulp.dest('tmp/public'))
+        .pipe(gulp.dest(path.join('tmp', 'public')))
         .pipe(plugins.livereload({start: true}));
     });
 
@@ -47,7 +47,7 @@ const Assets = {
   },
 
   sass({watch = false} = {}) {
-    let stream = gulp.src('app/stylesheets/application.scss').pipe(plugins.plumber());
+    let stream = gulp.src(path.join('app', 'stylesheets', 'application.scss')).pipe(plugins.plumber());
     if (watch) {
       stream = stream
         .pipe(plugins.watch('app/stylesheets/**/*.scss'))
@@ -130,7 +130,7 @@ const Assets = {
       let {entry, output, ...webpackConfig} = require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV);
       webpackConfig = {...webpackConfig, entry: {...entry, client}, output: {...output, publicPath}};
       const server = new WebpackDevServer(webpack(webpackConfig), {
-        contentBase: './tmp/public',
+        contentBase: path.join('.', 'tmp', 'public'),
         headers: {'Access-Control-Allow-Origin': '*'},
         hot: true,
         publicPath,
