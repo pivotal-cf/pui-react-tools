@@ -33,6 +33,8 @@ const Assets = {
         .pipe(plugins.livereload({start: true}));
     });
 
+    gulp.task('assets-html', Assets.tasks.buildHtml);
+
     gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
   },
 
@@ -61,8 +63,8 @@ const Assets = {
       .pipe(plugins.cond(isProduction(), () => plugins.cssnano()));
   },
 
-  html({watch}) {
-    let {entry = ['app/components/application.js'], hotModule, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
+  html({watch = false} = {}) {
+    let {entry = ['app/components/application.js'], hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
     const {assetPath} = require('./asset_helper');
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
@@ -77,7 +79,7 @@ const Assets = {
         [entryPath, file.path, './layout'].map(require.resolve).forEach(f => delete require.cache[f]);
 
         const Layout = require('./layout');
-        const assetConfig = isDevelopment() ? {assetHost: 'localhost', assetPort: 3001} : {};
+        const assetConfig = {assetHost, assetPort};
         const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
         const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
         const entryComponent = require(entryPath);
@@ -120,11 +122,15 @@ const Assets = {
         .pipe(gulp.dest('public'));
     },
 
+    buildHtml() {
+      const watch = isDevelopment();
+      Assets.html({watch}).pipe(gulp.dest('public'));
+    },
+
     buildAssetsServer() {
+      const {assetHost = 'localhost', assetPort = 3001} = require('./config');
       const webpack = require('webpack');
       const WebpackDevServer = require('webpack-dev-server');
-      const assetPort = 3001;
-      const assetHost = 'localhost';
       const client = `webpack-dev-server/client?http://${assetHost}:${assetPort}`;
       const publicPath = `//${assetHost}:${assetPort}/`;
       let {entry, output, ...webpackConfig} = require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV);
