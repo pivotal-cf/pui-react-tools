@@ -53,7 +53,8 @@ const Assets = {
     if (watch) {
       stream = stream
         .pipe(plugins.watch('app/stylesheets/**/*.scss'))
-        .pipe(plugins.sassGraphAbs([path.join(process.cwd(), 'app', 'stylesheets')]));
+        .pipe(plugins.cached('sass'))
+        .pipe(plugins.progeny())
     }
     return stream
       .pipe(plugins.cond(!isProduction(), () => plugins.sourcemaps.init()))
