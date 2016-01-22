@@ -51,10 +51,9 @@ const Assets = {
   sass({watch = false} = {}) {
     let stream = gulp.src(path.join('app', 'stylesheets', 'application.scss')).pipe(plugins.plumber());
     if (watch) {
-      stream = stream
-        .pipe(plugins.watch('app/stylesheets/**/*.scss'))
-        .pipe(plugins.cached('sass'))
-        .pipe(plugins.progeny())
+      gulp.src('app/stylesheets/**/*.scss').pipe(plugins.progeny());
+      stream = stream.pipe(plugins.watch('app/stylesheets/**/*.scss'))
+      .pipe(plugins.progeny());
     }
     return stream
       .pipe(plugins.cond(!isProduction(), () => plugins.sourcemaps.init()))
