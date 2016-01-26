@@ -84,7 +84,7 @@ const Assets = {
         const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
         const entryComponent = require(entryPath);
         const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
-        const html = ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>);
+        const html = "<!doctype html>" + ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>);
         const indexFile = new File({
           path: 'index.html',
           contents: new Buffer(html)
