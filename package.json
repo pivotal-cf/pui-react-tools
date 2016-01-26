@@ -35,6 +35,7 @@
     "gulp-plumber": "^1.0.1",
     "gulp-process-env": "0.0.1",
     "gulp-progeny": "^0.2.0",
+    "gulp-rename": "^1.2.2",
     "gulp-rev": "^6.0.1",
     "gulp-rev-css-url": "^0.1.0",
     "gulp-sass": "^2.0.4",

@@ -43,7 +43,8 @@ const Assets = {
     const streams = [
       Assets.html({watch}),
       !hotModule && Assets.javascript({watch}),
-      Assets.sass({watch})
+      Assets.sass({watch}),
+      Assets.images({watch})
     ].filter(Boolean);
     return mergeStream(...streams);
   },
@@ -61,6 +62,11 @@ const Assets = {
       .pipe(plugins.autoprefixer())
       .pipe(plugins.cond(!isProduction(), () => plugins.sourcemaps.write()))
       .pipe(plugins.cond(isProduction(), () => plugins.cssnano()));
+  },
+
+  images({watch = false} = {}) {
+    return gulp.src('app/images/**/*', {base: '.'})
+      .pipe(plugins.rename({dirname: 'images'}));
   },
 
   html({watch = false} = {}) {
