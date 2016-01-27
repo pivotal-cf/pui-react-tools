@@ -65,8 +65,9 @@ const Assets = {
   },
 
   images({watch = false} = {}) {
-    return gulp.src('app/images/**/*', {base: '.'})
-      .pipe(plugins.rename({dirname: 'images'}));
+    let stream = gulp.src('app/images/**/*', {base: '.'});
+    if (watch) stream = stream.pipe(plugins.watch('app/images/*'));
+    return stream.pipe(plugins.rename({dirname: 'images'}));
   },
 
   html({watch = false} = {}) {
