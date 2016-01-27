@@ -43,7 +43,8 @@ const Assets = {
     const streams = [
       Assets.html({watch}),
       !hotModule && Assets.javascript({watch}),
-      Assets.sass({watch})
+      Assets.sass({watch}),
+      Assets.images({watch})
     ].filter(Boolean);
     return mergeStream(...streams);
   },
@@ -61,6 +62,12 @@ const Assets = {
       .pipe(plugins.autoprefixer())
       .pipe(plugins.cond(!isProduction(), () => plugins.sourcemaps.write()))
       .pipe(plugins.cond(isProduction(), () => plugins.cssnano()));
+  },
+
+  images({watch = false} = {}) {
+    let stream = gulp.src('app/images/**/*', {base: '.'});
+    if (watch) stream = stream.pipe(plugins.watch('app/images/*'));
+    return stream.pipe(plugins.rename({dirname: 'images'}));
   },
 
   html({watch = false} = {}) {
@@ -84,7 +91,7 @@ const Assets = {
         const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
         const entryComponent = require(entryPath);
         const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
-        const html = ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>);
+        const html = "<!doctype html>" + ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>);
         const indexFile = new File({
           path: 'index.html',
           contents: new Buffer(html)
