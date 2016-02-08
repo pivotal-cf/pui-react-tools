@@ -84,19 +84,22 @@ const Assets = {
     return stream
       .pipe(through2.obj(function(file, enc, callback) {
         [entryPath, file.path, './layout'].map(require.resolve).forEach(f => delete require.cache[f]);
-
-        const Layout = require('./layout');
-        const assetConfig = {assetHost, assetPort};
-        const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
-        const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
-        const entryComponent = require(entryPath);
-        const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
-        const html = `<!doctype html>${ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>)}`;
-        const indexFile = new File({
-          path: 'index.html',
-          contents: new Buffer(html)
-        });
-        callback(null, indexFile);
+        try {
+          const Layout = require('./layout');
+          const assetConfig = {assetHost, assetPort};
+          const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
+          const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
+          const entryComponent = require(entryPath);
+          const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
+          const html = `<!doctype html>${ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>)}`;
+          const indexFile = new File({
+            path: 'index.html',
+            contents: new Buffer(html)
+          });
+          callback(null, indexFile);
+        } catch(e) {
+          callback(e);
+        }
       }));
   },
 

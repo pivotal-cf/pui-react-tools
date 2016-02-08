@@ -12,7 +12,8 @@ const Jasmine = {
   },
 
   appAssets(options = {}) {
-    const config = Object.assign(require(path.resolve(process.cwd(), 'config', 'webpack.config'))('test'), options);
+    const testConfig = require(path.resolve(process.cwd(), 'config', 'webpack.config'))('test');
+    const config = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(options.plugins || [])});
     const javascript = gulp.src(['spec/app/**/*_spec.js'])
       .pipe(plumber())
       .pipe(webpack(config));
