@@ -1,6 +1,6 @@
 const gulp = require('gulp');
 const mergeStream = require('merge-stream');
-const {jasmineBrowser, plumber} = require('gulp-load-plugins')();
+const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
 const webpack = require('webpack-stream');
 const path = require('path');
 
@@ -9,9 +9,9 @@ const Jasmine = {
 
   install(config = {}) {
     Jasmine.installConfig = config;
-    gulp.task('spec-app', Jasmine.tasks.specApp);
-
     gulp.task('jasmine', Jasmine.tasks.jasmine);
+    gulp.task('spec-app', Jasmine.tasks.specApp);
+    gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
   appAssets(options = {}) {
@@ -27,6 +27,11 @@ const Jasmine = {
     );
   },
 
+  serverAssets() {
+    return gulp.src(['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js'])
+      .pipe(plumber());
+  },
+
   tasks: {
     jasmine() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
@@ -38,6 +43,13 @@ const Jasmine = {
       return Jasmine.appAssets({watch: false})
         .pipe(jasmineBrowser.specRunner({console: true}))
         .pipe(jasmineBrowser.headless({driver: 'phantomjs'}));
+    },
+    specServer(){
+      const env = processEnv({NODE_ENV: 'test'});
+      return Jasmine.serverAssets()
+        .pipe(env)
+        .pipe(jasmine({includeStackTrace: true}))
+        .pipe(env.restore());
     }
   }
 };
