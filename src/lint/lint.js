@@ -22,10 +22,14 @@ function lint() {
     .pipe(() => eslint.failAfterError());
 }
 
-
 const Lint = {
-  install() {
+  install(installOptions = {}) {
+    Object.assign(Lint.installOptions, installOptions);
     gulp.task('lint', Lint.tasks.lint());
+  },
+
+  installOptions: {
+    globs: ['gulpfile.js', 'app/**/*.js', 'helpers/**/*.js', 'server/**/*.js', 'spec/**/*.js', 'tasks/**/*.js', 'lib/**/*.js']
   },
 
   lint: lint(),
@@ -33,7 +37,8 @@ const Lint = {
   tasks: {
     lint() {
       return function() {
-        return gulp.src(['gulpfile.js', 'app/**/*.js', 'helpers/**/*.js', 'server/**/*.js', 'spec/**/*.js', 'tasks/**/*.js'], {base: '.'})
+        const globs = Lint.installOptions.globs;
+        return gulp.src(globs, {base: '.'})
           .pipe(Lint.lint());
       };
     }
