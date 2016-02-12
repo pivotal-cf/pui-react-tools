@@ -5,7 +5,10 @@ const webpack = require('webpack-stream');
 const path = require('path');
 
 const Jasmine = {
-  install() {
+  installConfig: {},
+
+  install(config = {}) {
+    Jasmine.installConfig = config;
     gulp.task('spec-app', Jasmine.tasks.specApp);
 
     gulp.task('jasmine', Jasmine.tasks.jasmine);
@@ -18,9 +21,9 @@ const Jasmine = {
       .pipe(plumber())
       .pipe(webpack(config));
     return mergeStream(
-      gulp.src(require.resolve('phantomjs-polyfill/bind-polyfill')),
       javascript,
-      gulp.src(require.resolve('./jasmine.css'))
+      gulp.src(require.resolve('./jasmine.css')),
+      ...(Jasmine.installConfig.additionalAppAssets || [])
     );
   },
 
