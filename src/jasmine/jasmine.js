@@ -9,8 +9,8 @@ const Jasmine = {
     getAdditionalAppAssets: () => []
   },
 
-  install(config = {}) {
-    Jasmine.installConfig = config;
+  install(installOptions = {}) {
+    Object.assign(Jasmine.installConfig, installOptions);
     gulp.task('jasmine', Jasmine.tasks.jasmine);
     gulp.task('spec-app', Jasmine.tasks.specApp);
     gulp.task('spec-server', Jasmine.tasks.specServer);
