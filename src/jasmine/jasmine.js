@@ -5,7 +5,9 @@ const webpack = require('webpack-stream');
 const path = require('path');
 
 const Jasmine = {
-  installConfig: {},
+  installConfig: {
+    getAdditionalAppAssets: () => []
+  },
 
   install(config = {}) {
     Jasmine.installConfig = config;
@@ -23,7 +25,7 @@ const Jasmine = {
     return mergeStream(
       javascript,
       gulp.src(require.resolve('./jasmine.css')),
-      ...(Jasmine.installConfig.additionalAppAssets || [])
+      ...(Jasmine.installConfig.getAdditionalAppAssets())
     );
   },
 

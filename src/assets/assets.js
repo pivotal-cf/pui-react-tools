@@ -20,7 +20,8 @@ function isProduction() {
 }
 
 const Assets = {
-  install() {
+  install(options = {}) {
+    Object.assign(Assets.installOptions, options);
     gulp.task('clean-assets', Assets.tasks.cleanAssets);
 
     gulp.task('clean-assets-server', Assets.tasks.cleanAssetsServer);
@@ -38,19 +39,22 @@ const Assets = {
     gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
   },
 
+  installOptions: {getAdditionalAppAssets: () => []},
+
   all({hotModule} = {}) {
     const watch = isDevelopment();
     const streams = [
       Assets.html({watch}),
       !hotModule && Assets.javascript({watch}),
       Assets.sass({watch}),
-      Assets.images({watch})
+      Assets.images({watch}),
+      ...Assets.installOptions.getAdditionalAppAssets()
     ].filter(Boolean);
     return mergeStream(...streams);
   },
 
   sass({watch = false} = {}) {
-    let stream = gulp.src(path.join('app', 'stylesheets', 'application.scss')).pipe(plugins.plumber());
+    let stream = gulp.src(['app/stylesheets/application.scss']).pipe(plugins.plumber());
     if (watch) {
       gulp.src('app/stylesheets/**/*.scss').pipe(plugins.progeny());
       stream = stream.pipe(plugins.watch('app/stylesheets/**/*.scss'))
@@ -88,7 +92,10 @@ const Assets = {
           const Layout = require('./layout');
           const assetConfig = {assetHost, assetPort};
           const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
-          const scriptPaths = [hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig));
+          const scriptPaths = [
+            '/config.js',
+            ...[hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig))
+          ];
           const entryComponent = require(entryPath);
           const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
           const html = `<!doctype html>${ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>)}`;
