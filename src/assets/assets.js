@@ -7,8 +7,9 @@ const path = require('path');
 const plugins = require('gulp-load-plugins')();
 /* eslint-disable no-unused-vars */
 const React = require('react');
-const ReactDOMServer = require('react-dom/server');
 /* eslint-enable no-unused-vars */
+const ReactDOMServer = require('react-dom/server');
+const {readable} = require('event-stream');
 const webpack = require('webpack-stream');
 
 function isDevelopment() {
@@ -36,6 +37,8 @@ const Assets = {
 
     gulp.task('assets-html', Assets.tasks.buildHtml);
 
+    gulp.task('assets-config', Assets.tasks.buildConfig);
+
     gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
   },
 
@@ -44,6 +47,7 @@ const Assets = {
   all({hotModule} = {}) {
     const watch = isDevelopment();
     const streams = [
+      Assets.config(),
       Assets.html({watch}),
       !hotModule && Assets.javascript({watch}),
       Assets.sass({watch}),
@@ -110,6 +114,18 @@ const Assets = {
       }));
   },
 
+  config() {
+    return readable(function(_, cb) {
+      const configContents = new File({
+        path: 'config.js',
+        contents: new Buffer('')
+      });
+      this.emit('data', configContents);
+      this.emit('end');
+      cb();
+    })
+  },
+
   javascript(options = {}) {
     const webpackConfig = Object.assign({}, require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV), options);
     return gulp.src(['app/components/application.js'])
@@ -160,6 +176,10 @@ const Assets = {
         quiet: true
       });
       server.listen(assetPort, assetHost);
+    },
+
+    buildConfig() {
+      Assets.config().pipe(gulp.dest('public'));
     }
   }
 };
