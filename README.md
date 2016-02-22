@@ -131,6 +131,30 @@ options = {
 }
 ```
 
+##### options.buildDirectory
+
+Assets are built to the 'public' directory by default. If you would like to change the directory in which assets are
+written, use the `buildDirectory` option.
+
+Example
+```js
+options = {
+  buildDirectory: 'myCoolDirectory'
+}
+```
+
+##### options.htmlBuildDirectory
+
+It is also possible to specify where the `index.html` is written using the `htmlBuildDirectory` option. If no option is specified,
+the `index.html` file will be written to the buildDirectory.
+
+Example
+```js
+options = {
+  htmlBuildDirectory: 'myCoolHtmlDirectory'
+}
+```
+
 #### User Application Configuration
 
 Specify configuration you need for running your application in `config/application.json`. 

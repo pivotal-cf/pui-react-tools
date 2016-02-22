@@ -42,7 +42,11 @@ const Assets = {
     gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
   },
 
-  installOptions: {getAdditionalAppAssets: () => []},
+  installOptions: {
+    getAdditionalAppAssets: () => [],
+    buildDirectory: 'public',
+    htmlBuildDirectory: undefined
+  },
 
   all({hotModule} = {}) {
     const watch = isDevelopment();
@@ -117,11 +121,11 @@ const Assets = {
   config() {
     let configOptions = require('./config');
     const globalNamespace = configOptions.globalNamespace || 'Application';
-    configOptions = JSON.stringify(configOptions);
+    let configOptionsJSON = JSON.stringify(configOptions);
     return readable(function(_, cb) {
       const configContents = new File({
         path: 'config.js',
-        contents: new Buffer(`window.${globalNamespace} = {config: ${configOptions}}`)
+        contents: new Buffer(`window.${globalNamespace} = {config: ${configOptionsJSON}}`)
       });
       this.emit('data', configContents);
       this.emit('end');
@@ -137,30 +141,41 @@ const Assets = {
   },
 
   tasks: {
-    cleanAssets(done){del(['public/*', '!public/.gitkeep']).then(() => done(), done);},
+    cleanAssets(done){
+      const {buildDirectory} = Assets.installOptions;
+      const {htmlBuildDirectory = buildDirectory} = Assets.installOptions;
+      del([
+        `${Assets.installOptions.buildDirectory}/*`,
+        `${Assets.installOptions.htmlBuildDirectory}/*`,
+        `!${Assets.installOptions.buildDirectory}/.gitkeep`
+        `!${Assets.installOptions.htmlBuildDirectory}/.gitkeep`
+      ]).then(() => done(), done)
+    },
 
     cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done);},
 
     assets() {
       const stream = Assets.all();
-      if (!isProduction()) return stream.pipe(gulp.dest('public'));
+      const {buildDirectory} = Assets.installOptions;
+      if (!isProduction()) return stream.pipe(gulp.dest(buildDirectory));
       const cloneSink = plugins.clone.sink();
       return stream
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest(buildDirectory))
         .pipe(plugins.rev())
         .pipe(plugins.revCssUrl())
         .pipe(cloneSink)
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest(buildDirectory))
         .pipe(plugins.rev.manifest())
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest(buildDirectory))
         .pipe(cloneSink.tap())
         .pipe(plugins.gzip())
-        .pipe(gulp.dest('public'));
+        .pipe(gulp.dest(buildDirectory));
     },
 
     buildHtml() {
       const watch = isDevelopment();
-      Assets.html({watch}).pipe(gulp.dest('public'));
+      const {htmlBuildDirectory = Assets.installOptions.buildDirectory} = Assets.installOptions;
+      Assets.html({watch}).pipe(gulp.dest(htmlBuildDirectory));
     },
 
     buildAssetsServer() {
@@ -182,7 +197,7 @@ const Assets = {
     },
 
     buildConfig() {
-      Assets.config().pipe(gulp.dest('public'));
+      Assets.config().pipe(gulp.dest(Assets.installOptions.buildDirectory));
     }
   }
 };
