@@ -133,27 +133,19 @@ options = {
 
 ##### options.buildDirectory
 
+`Type: String`
+`default: 'public'`
+
 Assets are built to the 'public' directory by default. If you would like to change the directory in which assets are
 written, use the `buildDirectory` option.
 
-Example
-```js
-options = {
-  buildDirectory: 'myCoolDirectory'
-}
-```
-
 ##### options.htmlBuildDirectory
+
+`Type: String`
+`default: buildDirectory ('public')`
 
 It is also possible to specify where the `index.html` is written using the `htmlBuildDirectory` option. If no option is specified,
 the `index.html` file will be written to the buildDirectory.
-
-Example
-```js
-options = {
-  htmlBuildDirectory: 'myCoolHtmlDirectory'
-}
-```
 
 #### User Application Configuration
 
@@ -163,8 +155,8 @@ For environment-specific overrides, add files with the format `config/NODE_ENV.j
 This configuration is largely intended to store keys related to your application domain, 
 but the following keys are used when compiling assets.
 
-|key|default|purpose|
-|-|-|-|
+| key | default | purpose |
+| --- | --- | --- |
 |`scripts`|`application.js`|scripts to load into `index.html`|
 |`stylesheets`|`application.css`|stylesheets to load into `index.html`|
 |`entry`|`app/components/application.js`|React entrypoint for your application|
