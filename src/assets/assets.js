@@ -35,7 +35,9 @@ const Assets = {
         .pipe(plugins.livereload({start: true}));
     });
 
-    gulp.task('assets-html', Assets.tasks.buildHtml);
+    gulp.task('clean-assets-html', Assets.tasks.cleanAssetsHtml);
+
+    gulp.task('assets-html', ['clean-assets-html'], Assets.tasks.buildHtml);
 
     gulp.task('assets-config', Assets.tasks.buildConfig);
 
@@ -143,11 +145,17 @@ const Assets = {
   tasks: {
     cleanAssets(done){
       const {buildDirectory} = Assets.installOptions;
-      const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
       del([
         `${buildDirectory}/*`,
-        `${htmlBuildDirectory}/*`,
         `!${buildDirectory}/.gitkeep`
+      ]).then(() => done(), done);
+    },
+
+    cleanAssetsHtml(done){
+      const {buildDirectory} = Assets.installOptions;
+      const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
+      del([
+        `${htmlBuildDirectory}/*`,
         `!${htmlBuildDirectory}/.gitkeep`
       ]).then(() => done(), done);
     },
@@ -174,7 +182,8 @@ const Assets = {
 
     buildHtml() {
       const watch = isDevelopment();
-      const {htmlBuildDirectory = Assets.installOptions.buildDirectory} = Assets.installOptions;
+      const {buildDirectory} = Assets.installOptions;
+      const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
       Assets.html({watch}).pipe(gulp.dest(htmlBuildDirectory));
     },
 
