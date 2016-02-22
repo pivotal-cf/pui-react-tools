@@ -143,13 +143,13 @@ const Assets = {
   tasks: {
     cleanAssets(done){
       const {buildDirectory} = Assets.installOptions;
-      const {htmlBuildDirectory = buildDirectory} = Assets.installOptions;
+      const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
       del([
-        `${Assets.installOptions.buildDirectory}/*`,
-        `${Assets.installOptions.htmlBuildDirectory}/*`,
-        `!${Assets.installOptions.buildDirectory}/.gitkeep`
-        `!${Assets.installOptions.htmlBuildDirectory}/.gitkeep`
-      ]).then(() => done(), done)
+        `${buildDirectory}/*`,
+        `${htmlBuildDirectory}/*`,
+        `!${buildDirectory}/.gitkeep`
+        `!${htmlBuildDirectory}/.gitkeep`
+      ]).then(() => done(), done);
     },
 
     cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done);},
