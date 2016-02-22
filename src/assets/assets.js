@@ -116,12 +116,12 @@ const Assets = {
 
   config() {
     let configOptions = require('./config');
-    const globalNamespace = configOptions.globalNamespace;
+    const globalNamespace = configOptions.globalNamespace || 'Application';
     configOptions = JSON.stringify(configOptions);
     return readable(function(_, cb) {
       const configContents = new File({
         path: 'config.js',
-        contents: new Buffer(`window.${globalNamespace} = ${configOptions}`)
+        contents: new Buffer(`window.${globalNamespace} = {config: ${configOptions}}`)
       });
       this.emit('data', configContents);
       this.emit('end');
