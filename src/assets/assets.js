@@ -126,7 +126,7 @@ const Assets = {
       this.emit('data', configContents);
       this.emit('end');
       cb();
-    })
+    });
   },
 
   javascript(options = {}) {
@@ -137,9 +137,9 @@ const Assets = {
   },
 
   tasks: {
-    cleanAssets(done){del(['public/*', '!public/.gitkeep']).then(() => done(), done)},
+    cleanAssets(done){del(['public/*', '!public/.gitkeep']).then(() => done(), done);},
 
-    cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done)},
+    cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done);},
 
     assets() {
       const stream = Assets.all();
