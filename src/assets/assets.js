@@ -21,6 +21,10 @@ function isProduction() {
 }
 
 const Assets = {
+  Layout: require('./layout'),
+
+  Body: require('./body'),
+
   install(options = {}) {
     Object.assign(Assets.installOptions, options);
     gulp.task('clean-assets', Assets.tasks.cleanAssets);
@@ -47,7 +51,8 @@ const Assets = {
   installOptions: {
     getAdditionalAppAssets: () => [],
     buildDirectory: 'public',
-    htmlBuildDirectory: undefined
+    htmlBuildDirectory: undefined,
+    Layout: undefined
   },
 
   all({hotModule} = {}) {
@@ -99,7 +104,7 @@ const Assets = {
       .pipe(through2.obj(function(file, enc, callback) {
         [entryPath, file.path, './layout'].map(require.resolve).forEach(f => delete require.cache[f]);
         try {
-          const Layout = require('./layout');
+          const Layout = Assets.installOptions.Layout || Assets.Layout;
           const assetConfig = {assetHost, assetPort};
           const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
           const scriptPaths = [
