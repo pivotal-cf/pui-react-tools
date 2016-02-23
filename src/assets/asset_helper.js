@@ -14,4 +14,15 @@ function assetPath(asset, options = {}) {
   return `/${revManifest[asset] || asset}`;
 }
 
-module.exports = {assetPath};
+function getEntry(webpackConfig) {
+  const entry = webpackConfig.entry;
+  const defaultEntryPath = './app/components/application.js';
+
+  if (!entry) return defaultEntryPath;
+  if (entry.constructor === String) return entry;
+  if (Array.isArray(entry)) return entry[0];
+  if (Array.isArray(entry.application)) return entry.application[0];
+  return entry.application;
+}
+
+module.exports = {assetPath, getEntry};

@@ -90,15 +90,17 @@ const Assets = {
   },
 
   html({watch = false} = {}) {
-    let {entry = ['app/components/application.js'], hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
-    const {assetPath} = require('./asset_helper');
+    const webpackConfig = require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV);
+    const {assetPath, getEntry} = require('./asset_helper');
+    const entry = getEntry(webpackConfig);
+    let {hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
     if(watch) {
       stream = stream.pipe(plugins.watch('app/**/*.js'));
     }
 
-    const entryPath = path.join(process.cwd(), entry[0]);
+    const entryPath = path.join(process.cwd(), entry);
 
     return stream
       .pipe(through2.obj(function(file, enc, callback) {
@@ -142,7 +144,10 @@ const Assets = {
 
   javascript(options = {}) {
     const webpackConfig = Object.assign({}, require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV), options);
-    return gulp.src(['app/components/application.js'])
+    const {getEntry} = require('./asset_helper');
+    const entry = getEntry(webpackConfig);
+
+    return gulp.src([entry])
       .pipe(plugins.plumber())
       .pipe(webpack(webpackConfig));
   },

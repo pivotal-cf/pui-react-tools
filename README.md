@@ -171,7 +171,6 @@ but the following keys are used when compiling assets.
 | --- | --- | --- |
 |`scripts`|`application.js`|scripts to load into `index.html`|
 |`stylesheets`|`application.css`|stylesheets to load into `index.html`|
-|`entry`|`app/components/application.js`|React entrypoint for your application|
 |`title`|'the default title'|HTML title of `index.html`|
 |`assetHost`| '/' (production) 'localhost' (development) | The host to load assets from |
 |`assetPort`| '' (production) '3001' (development) | The port on the host to load assets from |
@@ -179,13 +178,20 @@ but the following keys are used when compiling assets.
 
 
 #### Default Assets
+Scripts and stylesheets are loaded from your application configuration.
 
+Entry is loaded from `config/webpack.config.js`. The acceptable formats are:
+
+* `entry: './path/to/your/entryComponent.js'`
+* `entry: ['./path/to/your/entryComponent.js', 'otherFile.js']`
+* `entry: { application: './path/to/your/entryComponent.js'}`
+* `entry: { application: ['./path/to/your/entryComponent.js', 'otherFile.js']}`
+
+If you provide no entry path, the entry component defaults to `./app/components/application.js`.
 
 ##### html
     
 An `index.html` file is created. This file renders your basic app and loads scripts and stylesheets.
-
-Scripts, stylesheets, and entry are loaded from your application configuration. 
 
 #### javascript
 
