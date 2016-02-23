@@ -147,6 +147,18 @@ written, use the `buildDirectory` option.
 It is also possible to specify where the `index.html` is written using the `htmlBuildDirectory` option. If no option is specified,
 the `index.html` file will be written to the buildDirectory.
 
+##### options.Layout
+
+`Type: React Component`
+`default: (component provided by this module)`
+
+You can specify a path to a React component to use as the layout for your application. If you do not specify this option, 
+a [layout file](https://github.com/pivotal-cf/pui-react-tools/blob/master/src/assets/layout.js) is provided for you.
+
+To make building your Layout easier, the `Assets.Body` key allows you to access the Body component; a default
+[body file](https://github.com/pivotal-cf/pui-react-tools/blob/master/src/assets/body.js) is provided. We have also
+exposed `Assets.Layout` if you want to subclass the layout component.
+
 #### User Application Configuration
 
 Specify configuration you need for running your application in `config/application.json`. 
