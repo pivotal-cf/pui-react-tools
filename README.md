@@ -207,7 +207,10 @@ sources images from `app/images/**/*`.
 
 #### config
 
-Currently empty
+A `config.js` file is generated using the `globalNamespace` option in `config/application.json`. This file sets your
+environment variables whitelisted in `config/env.json` so that they are accessible at `window.globalNamespace.config`.
+
+If you do not provide a `globalNamespace`, `config.js` defaults to using the namespace of 'Application'.
 
 ### Usage
 
