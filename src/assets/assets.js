@@ -5,11 +5,10 @@ const mergeStream = require('merge-stream');
 const through2 = require('through2');
 const path = require('path');
 const plugins = require('gulp-load-plugins')();
-/* eslint-disable no-unused-vars */
 const React = require('react');
-/* eslint-enable no-unused-vars */
 const ReactDOMServer = require('react-dom/server');
 const {readable} = require('event-stream');
+const spy = require('through2-spy');
 const webpack = require('webpack-stream');
 
 function isDevelopment() {
@@ -41,11 +40,11 @@ const Assets = {
 
     gulp.task('clean-assets-html', Assets.tasks.cleanAssetsHtml);
 
-    gulp.task('assets-html', ['clean-assets-html'], Assets.tasks.buildHtml);
+    gulp.task('assets-html', ['clean-assets-html'], Assets.tasks.assetsHtml);
 
-    gulp.task('assets-config', Assets.tasks.buildConfig);
+    gulp.task('assets-config', Assets.tasks.assetsConfig);
 
-    gulp.task('assets-server', ['build-assets-server'], Assets.tasks.buildAssetsServer);
+    gulp.task('assets-server', ['build-assets-server'], Assets.tasks.assetsServer);
   },
 
   installOptions: {
@@ -93,7 +92,8 @@ const Assets = {
     const webpackConfig = require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV);
     const {assetPath, getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
-    let {hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = require('./config');
+    const config = require('./config');
+    let {hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = config;
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
     if(watch) {
@@ -114,7 +114,7 @@ const Assets = {
             ...[hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig))
           ];
           const entryComponent = require(entryPath);
-          const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title};
+          const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title, config};
           const html = `<!doctype html>${ReactDOMServer.renderToStaticMarkup(<Layout {...props}/>)}`;
           const indexFile = new File({
             path: 'index.html',
@@ -190,14 +190,22 @@ const Assets = {
         .pipe(gulp.dest(buildDirectory));
     },
 
-    buildHtml() {
+    assetsHtml(done) {
       const watch = isDevelopment();
-      const {buildDirectory} = Assets.installOptions;
-      const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
-      Assets.html({watch}).pipe(gulp.dest(htmlBuildDirectory));
+      const {buildDirectory, htmlBuildDirectory = buildDirectory} = Assets.installOptions;
+      let once = false;
+      Assets.html({watch})
+        .pipe(gulp.dest(htmlBuildDirectory))
+        .pipe(spy.obj(function(chunk) {
+          if (once) return;
+          if (chunk.path.match(/index\.html/)) {
+            once = true;
+            done();
+          }
+        }));
     },
 
-    buildAssetsServer() {
+    assetsServer() {
       const {assetHost = 'localhost', assetPort = 3001} = require('./config');
       const webpack = require('webpack');
       const WebpackDevServer = require('webpack-dev-server');
@@ -215,7 +223,7 @@ const Assets = {
       server.listen(assetPort, assetHost);
     },
 
-    buildConfig() {
+    assetsConfig() {
       Assets.config().pipe(gulp.dest(Assets.installOptions.buildDirectory));
     }
   }
