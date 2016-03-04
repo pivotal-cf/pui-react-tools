@@ -164,10 +164,7 @@ const Assets = {
     cleanAssetsHtml(done){
       const {buildDirectory} = Assets.installOptions;
       const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
-      del([
-        `${htmlBuildDirectory}/*`,
-        `!${htmlBuildDirectory}/.gitkeep`
-      ]).then(() => done(), done);
+      del([`${htmlBuildDirectory}/index.html`]).then(() => done(), done);
     },
 
     cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done);},
