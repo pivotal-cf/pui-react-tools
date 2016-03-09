@@ -50,7 +50,6 @@
     "lsof": "^0.1.0",
     "merge-stream": "^1.0.0",
     "npm": "^3.4.1",
-    "phantomjs-prebuilt": "^2.1.4",
     "portfinder": "^0.4.0",
     "react": "^0.14.3",
     "react-addons-test-utils": "^0.14.3",
