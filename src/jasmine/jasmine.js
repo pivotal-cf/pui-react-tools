@@ -6,7 +6,8 @@ const path = require('path');
 
 const Jasmine = {
   installConfig: {
-    getAdditionalAppAssets: () => []
+    getAdditionalAppAssets: () => [],
+    headlessConfig: {}
   },
 
   install(installOptions = {}) {
@@ -42,9 +43,10 @@ const Jasmine = {
         .pipe(jasmineBrowser.server({whenReady: plugin.whenReady}));
     },
     specApp() {
+      const {headlessConfig} = Jasmine.installConfig;
       return Jasmine.appAssets({watch: false})
         .pipe(jasmineBrowser.specRunner({console: true}))
-        .pipe(jasmineBrowser.headless({driver: 'phantomjs'}));
+        .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessConfig}));
     },
     specServer(){
       const env = processEnv({NODE_ENV: 'test'});
