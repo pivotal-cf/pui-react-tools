@@ -48,22 +48,21 @@ const Assets = {
   },
 
   installOptions: {
-    getAdditionalAppAssets: () => [],
+    assets: {},
     buildDirectory: 'public',
+    getAdditionalAppAssets: () => [],
     htmlBuildDirectory: undefined,
     Layout: undefined
   },
 
   all({hotModule} = {}) {
+    const {assets} = Assets.installOptions;
     const watch = isDevelopment();
-    const streams = [
-      Assets.config(),
-      Assets.html({watch}),
-      !hotModule && Assets.javascript({watch}),
-      Assets.sass({watch}),
-      Assets.images({watch}),
-      ...Assets.installOptions.getAdditionalAppAssets()
-    ].filter(Boolean);
+    const streams = ['config', 'html', !hotModule && 'javascript', 'sass', 'images']
+      .map((asset) => asset && (assets[asset] !== false) && Assets[asset]({watch}))
+      .filter(Boolean)
+      .concat(Assets.installOptions.getAdditionalAppAssets());
+
     return mergeStream(...streams);
   },
 

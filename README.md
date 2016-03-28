@@ -126,6 +126,24 @@ directory.
 
 #### Options
 
+##### options.assets
+
+`Type: Object`
+`default: {}`
+
+Building assets by default includes `html`, `javascript`, `sass`, `images`, and `config`. If you would like to turn off any of these asset compilations, you can include the `assets` option.
+Each asset will be compiled unless it is to `false`.
+
+Example
+```js
+options = {
+  assets: {
+    config: false,
+    sass: false
+  }
+}
+```
+
 ##### options.getAdditionalAppAssets
 
 `Type: Function`
