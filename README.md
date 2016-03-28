@@ -59,6 +59,18 @@ options = {
 }
 ```
 
+#### options.headlessConfig
+`Type: Object`
+`default: {}`
+
+Options to pass to the headless jasmine runner.
+Example
+```js
+options = {
+  headlessConfig: {driver: 'slimerjs', random : true}
+};
+```
+
 ### Usage
 
 * `gulp jasmine` starts the jasmine server. The server starts at port 8888 by default.
