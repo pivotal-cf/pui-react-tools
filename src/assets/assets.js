@@ -28,15 +28,7 @@ const Assets = {
     Object.assign(Assets.installOptions, options);
     gulp.task('clean-assets', Assets.tasks.cleanAssets);
 
-    gulp.task('clean-assets-server', Assets.tasks.cleanAssetsServer);
-
     gulp.task('assets', ['clean-assets'], Assets.tasks.assets);
-
-    gulp.task('build-assets-server', ['clean-assets-server'], function() {
-      Assets.all({hotModule: true})
-        .pipe(gulp.dest(path.join('tmp', 'public')))
-        .pipe(plugins.livereload({start: true}));
-    });
 
     gulp.task('clean-assets-html', Assets.tasks.cleanAssetsHtml);
 
@@ -44,11 +36,14 @@ const Assets = {
 
     gulp.task('assets-config', Assets.tasks.assetsConfig);
 
-    gulp.task('assets-server', ['build-assets-server'], Assets.tasks.assetsServer);
+    if (Assets.installOptions.useAssetsServer) {
+      gulp.task('assets-server', Assets.tasks.assetsServer);
+    }
   },
 
   installOptions: {
     assets: {},
+    useAssetsServer: true,
     buildDirectory: 'public',
     getAdditionalAppAssets: () => [],
     htmlBuildDirectory: undefined,
@@ -92,7 +87,7 @@ const Assets = {
     const {assetPath, getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
     const config = require('./config');
-    let {hotModule, assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = config;
+    let {assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = config;
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
     if(watch) {
@@ -110,7 +105,7 @@ const Assets = {
           const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
           const scriptPaths = [
             '/config.js',
-            ...[hotModule && 'client.js', ...scripts].filter(Boolean).map(f => assetPath(f, assetConfig))
+            ...scripts.map(f => assetPath(f, assetConfig))
           ];
           const entryComponent = require(entryPath);
           const props = {entry: entryComponent, scripts: scriptPaths, stylesheets: stylesheetPaths, title, config};
@@ -146,9 +141,14 @@ const Assets = {
     const {getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
 
+    const cssFilter = plugins.filter('*.css', {restore: true});
     return gulp.src([entry])
       .pipe(plugins.plumber())
-      .pipe(webpack(webpackConfig));
+      .pipe(webpack(webpackConfig))
+      .pipe(cssFilter)
+      .pipe(plugins.autoprefixer())
+      .pipe(cssFilter.restore);
+
   },
 
   tasks: {
@@ -165,8 +165,6 @@ const Assets = {
       const htmlBuildDirectory = Assets.installOptions.htmlBuildDirectory || buildDirectory;
       del([`${htmlBuildDirectory}/index.html`]).then(() => done(), done);
     },
-
-    cleanAssetsServer(done){del(['tmp/public/**/*']).then(() => done(), done);},
 
     assets() {
       const stream = Assets.all();
@@ -201,23 +199,7 @@ const Assets = {
         }));
     },
 
-    assetsServer() {
-      const {assetHost = 'localhost', assetPort = 3001} = require('./config');
-      const webpack = require('webpack');
-      const WebpackDevServer = require('webpack-dev-server');
-      const client = `webpack-dev-server/client?http://${assetHost}:${assetPort}`;
-      const publicPath = `//${assetHost}:${assetPort}/`;
-      let {entry, output, ...webpackConfig} = require(path.join(process.cwd(), 'config', 'webpack.config'))(process.env.NODE_ENV);
-      webpackConfig = {...webpackConfig, entry: {...entry, client}, output: {...output, publicPath}};
-      const server = new WebpackDevServer(webpack(webpackConfig), {
-        contentBase: path.join('.', 'tmp', 'public'),
-        headers: {'Access-Control-Allow-Origin': '*'},
-        hot: true,
-        publicPath,
-        quiet: true
-      });
-      server.listen(assetPort, assetHost);
-    },
+    assetsServer: require('./assets_server'),
 
     assetsConfig() {
       Assets.config().pipe(gulp.dest(Assets.installOptions.buildDirectory));
