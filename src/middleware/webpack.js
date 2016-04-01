@@ -1,31 +1,16 @@
 const devMiddleware = require('webpack-dev-middleware');
 const hotMiddleware = require('webpack-hot-middleware');
-const path = require('path');
 
 let compiler;
 
 function getWebpackCompiler(env = 'development') {
   if (compiler) return compiler;
+  const Assets = require('../assets/assets');
   const webpack = require('webpack');
-  const config = require(path.join(process.cwd(), 'config', 'webpack.config'))(env);
-  compiler = webpack(config);
+  const webpackConfig = require('../webpack/webpack.config')(Assets.installOptions.webpackConfig, env);
+  compiler = webpack(webpackConfig);
   return compiler;
 }
-
-//TODO: find a better way to deeply merge webpack configuration correctly
-/*
-function mergeWebpackConfig(defaults, overrides) {
-  const {module, plugins, entry, output, ...rest} = overrides;
-  let config = {...defaults, ...rest};
-
-  if(config.module && module) {
-    config.module.loaders = [...(config.module.loaders || []), ...(module.loaders || [])];
-  }
-  console.log('config', config)
-
-  return config;
-}
-*/
 
 const middleware = {
   dev(options = {}) {
