@@ -1,10 +1,8 @@
 const HotModuleReplacementPlugin = require('webpack/lib/HotModuleReplacementPlugin');
 const {noErrors} = require('./webpack.plugins');
 
-const assetHost = 'http://localhost';
-const assetPort = 3001;
-const publicPath = `${assetHost}:${assetPort}/`;
-//TODO deal with case with no asset server
+const {assetHost, assetPort} = require('../assets/config');
+const publicPath = assetHost ? `//${assetHost}:${assetPort}/` : '/';
 
 module.exports = {
   devtool: 'source-map',

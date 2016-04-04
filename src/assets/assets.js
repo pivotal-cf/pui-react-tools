@@ -47,8 +47,7 @@ const Assets = {
     buildDirectory: 'public',
     getAdditionalAppAssets: () => [],
     htmlBuildDirectory: undefined,
-    Layout: undefined,
-    webpackConfig: {}
+    Layout: undefined
   },
 
   all({hotModule} = {}) {
@@ -84,7 +83,7 @@ const Assets = {
   },
 
   html({watch = false} = {}) {
-    const webpackConfig = require('../webpack/webpack.config')(Assets.installOptions.webpackConfig, process.env.NODE_ENV);
+    const webpackConfig = require('../webpack/webpack.config')(process.env.NODE_ENV);
     const {assetPath, getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
     const config = require('./config');
@@ -138,7 +137,7 @@ const Assets = {
   },
 
   javascript(options = {}) {
-    const webpackConfig = require('../webpack/webpack.config')(Assets.installOptions.webpackConfig, process.env.NODE_ENV, options);
+    const webpackConfig = require('../webpack/webpack.config')(process.env.NODE_ENV, options);
     const {getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
 

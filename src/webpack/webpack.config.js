@@ -1,6 +1,14 @@
 const {extractCss, extractSass, noErrors} = require('./webpack.plugins.js');
+const path = require('path');
 
-module.exports = function(userWebpackConfig = {}, env, options = {}) {
+let userWebpackConfig = {};
+try {
+  userWebpackConfig = require(path.join(process.cwd(), 'pui-react-tools')).webpack;
+} catch(e) {
+  
+}
+
+module.exports = function(env, options = {}) {
   let envConfig = {};
   try {
     envConfig = require(`./${env}`);
@@ -35,7 +43,7 @@ module.exports = function(userWebpackConfig = {}, env, options = {}) {
   };
   
   const userBaseConfig = userWebpackConfig.base;
-  
+
   return {
     ...baseConfig, 
     ...(userBaseConfig || {}), 

@@ -5,9 +5,8 @@ let compiler;
 
 function getWebpackCompiler(env = 'development') {
   if (compiler) return compiler;
-  const Assets = require('../assets/assets');
   const webpack = require('webpack');
-  const webpackConfig = require('../webpack/webpack.config')(Assets.installOptions.webpackConfig, env);
+  const webpackConfig = require('../webpack/webpack.config')(env);
   compiler = webpack(webpackConfig);
   return compiler;
 }

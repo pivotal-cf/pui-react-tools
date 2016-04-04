@@ -6,8 +6,7 @@ const webpack = require('webpack-stream');
 const Jasmine = {
   installOptions: {
     getAdditionalAppAssets: () => [],
-    headlessConfig: {},
-    webpackConfig: {}
+    headlessConfig: {}
   },
 
   install(installOptions = {}) {
@@ -19,7 +18,7 @@ const Jasmine = {
 
   appAssets(options = {}) {
     const {plugins, ...rest} = options;
-    const testConfig = require('../webpack/webpack.config')(Jasmine.installOptions.webpackConfig, 'test', rest);
+    const testConfig = require('../webpack/webpack.config')('test', rest);
     const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
     const javascript = gulp.src(['spec/app/**/*_spec.js'])
       .pipe(plumber())
