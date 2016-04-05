@@ -38,15 +38,16 @@ const Jasmine = {
   tasks: {
     jasmine() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
-      return Jasmine.appAssets({plugins: [plugin]})
-        .pipe(jasmineBrowser.specRunner())
-        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady}));
+      const {browserAppAssetsOptions, browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
+      return Jasmine.appAssets({plugins: [plugin], browserAppAssetsOptions})
+        .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
+        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}));
     },
     specApp() {
-      const {headlessConfig} = Jasmine.installOptions;
-      return Jasmine.appAssets({watch: false})
-        .pipe(jasmineBrowser.specRunner({console: true}))
-        .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessConfig}));
+      const {headlessAppAssetsOptions, headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
+      return Jasmine.appAssets({watch: false, ...headlessAppAssetsOptions})
+        .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
+        .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessServerOptions}));
     },
     specServer(){
       const env = processEnv({NODE_ENV: 'test'});
