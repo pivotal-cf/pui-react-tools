@@ -11,7 +11,9 @@ const Jasmine = {
     getAdditionalAppAssets: () => [],
     headlessAppAssetsOptions: {},
     headlessServerOptions: {},
-    headlessSpecRunnerOptions: {}
+    headlessSpecRunnerOptions: {},
+    appGlobs: ['spec/app/**/*_spec.js'],
+    serverGlobs: ['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js']
   },
 
   install(installOptions = {}) {
@@ -25,7 +27,7 @@ const Jasmine = {
     const {plugins, ...rest} = options;
     const testConfig = require('../webpack/webpack.config')('test', rest);
     const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
-    const javascript = gulp.src(['spec/app/**/*_spec.js'])
+    const javascript = gulp.src(Jasmine.installOptions.appGlobs)
       .pipe(plumber())
       .pipe(webpack(webpackConfig));
     return mergeStream(
@@ -36,7 +38,7 @@ const Jasmine = {
   },
 
   serverAssets() {
-    return gulp.src(['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js'])
+    return gulp.src(Jasmine.installOption.serverGlobs)
       .pipe(plumber());
   },
 
