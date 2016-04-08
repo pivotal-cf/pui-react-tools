@@ -2,17 +2,23 @@ const fs = require('fs');
 const camelCase = require('lodash.camelcase');
 const path = require('path');
 
-const env = require(path.join(process.cwd(), 'config', 'env.json')).reduce((memo, key) => {
-  if (key in process.env) {
-    const keyCamelCase = camelCase(key);
-    if (key.startsWith('USE_')) {
-      memo[keyCamelCase] = String(process.env[key]) !== 'false';
-    } else {
-      memo[keyCamelCase] = process.env[key];
+let env = {};
+
+try {
+  env = require(path.join(process.cwd(), 'config', 'env.json')).reduce((memo, key) => {
+    if (key in process.env) {
+      const keyCamelCase = camelCase(key);
+      if (key.startsWith('USE_')) {
+        memo[keyCamelCase] = String(process.env[key]) !== 'false';
+      } else {
+        memo[keyCamelCase] = process.env[key];
+      }
     }
-  }
-  return memo;
-}, {});
+    return memo;
+  }, {});
+} catch(e) {
+
+}
 
 function requireEnvFile(...files) {
   return files
