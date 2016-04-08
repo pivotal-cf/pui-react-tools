@@ -59,11 +59,12 @@ options = {
 }
 ```
 
-#### options.headlessConfig
+
+#### options.headlessServerOptions
 `Type: Object`
 `default: {}`
 
-Options to pass to the headless jasmine runner.
+Options to pass to the headless jasmine server.
 Example
 ```js
 options = {
