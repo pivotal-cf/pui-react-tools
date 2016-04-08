@@ -9,7 +9,7 @@ module.exports = {
         'NODE_ENV': '"production"'
       }
     }),
-    new UglifyJsPlugin({compress: {warnings: false}}),
+    new UglifyJsPlugin({compress: {warnings: false}, sourceMap: false}),
     noErrors,
     extractCss,
     extractSass
