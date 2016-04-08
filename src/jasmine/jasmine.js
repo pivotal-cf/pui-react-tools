@@ -5,8 +5,13 @@ const webpack = require('webpack-stream');
 
 const Jasmine = {
   installOptions: {
+    browserAppAssetsOptions: {},
+    browserServerOptions: {},
+    browserSpecRunnerOptions: {},
     getAdditionalAppAssets: () => [],
-    headlessConfig: {}
+    headlessAppAssetsOptions: {},
+    headlessServerOptions: {},
+    headlessSpecRunnerOptions: {}
   },
 
   install(installOptions = {}) {
