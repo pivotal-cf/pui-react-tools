@@ -22,7 +22,8 @@ function getEntry(webpackConfig) {
   if (entry.constructor === String) return entry;
   if (Array.isArray(entry)) return entry[0];
   if (Array.isArray(entry.application)) return entry.application[0];
-  return entry.application;
+  if (entry.application) return entry.application;
+  return Object.values(entry)[0];
 }
 
 module.exports = {assetPath, getEntry};
