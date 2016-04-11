@@ -59,6 +59,17 @@ options = {
 }
 ```
 
+#### options.browserSpecRunnerOptions
+`Type: Object`
+`default: {}`
+
+Options to pass to the spec runner used in the browser.
+Example
+```js
+options = {
+  browserSpecRunnerOptions: {sourcemappedStacktrace: true}
+};
+```
 
 #### options.headlessServerOptions
 `Type: Object`
@@ -68,7 +79,7 @@ Options to pass to the headless jasmine server.
 Example
 ```js
 options = {
-  headlessConfig: {driver: 'slimerjs', random : true}
+  headlessServerOptions: {driver: 'slimerjs', random : true}
 };
 ```
 
@@ -80,7 +91,7 @@ options = {
 
     * 'spec/server/**/*.js'
     * 'spec/lib/**/*.js' 
-    * 'spec/helpers/**/*.js'  
+    * 'spec/helpers/**/*.js'
     
 ## Foreman
 
@@ -103,6 +114,13 @@ start: npm start
 
 Run `gulp foreman` to run foreman with your `Procfile.dev`.
 
+To specify the port your server runs in, include a `.env` file in your root directory with configuration like
+
+```sh
+NODE_ENV=development
+PORT=3000
+```
+
 ## Assets Module
 
 ### Configuration
@@ -116,7 +134,7 @@ Assets.install(options);
 
 The assets tasks expects:
 
-* `config/webpack.config.js`
+* `pui-react-tools.js`
 * `config/application.json`
 * `config/env.json` - whitelist of environment variables to include in your config
 * `.babelrc`
@@ -124,6 +142,31 @@ The assets tasks expects:
 
 Example files can be found in the [react-starter](https://github.com/pivotal-cf/react-starter) project in the `config` 
 directory.
+
+Pui React Tools uses Webpack to compile most assets. There is a lot of configuration required to do this correctly and a default configuration is provided.
+If you would like to change the webpack configuration, you can store the option in a file `pui-react-tools.js`. This file should export an options object with the `webpack` key
+
+```js
+module.exports = {
+  webpack: {
+    base: {
+      devtool: 'cheap-module-source-map'
+    },
+    test: {
+      resolve: {
+        alias: {
+          'performance-now': `${__dirname}/spec/app/support/mock_performance_now.js`,
+        }
+      }
+    }
+  }
+}
+```
+
+Within the `webpack` object, the `base` key represents Webpack options that are the defaults for every environment. 
+There are also, `development`, `production`, and `test` objects that will override the Webpack defaults in those environments.
+Note that there are internal environment specific overrides within Pui React Tools. 
+This means that if you need to change Webpack config across all environments, you may have to specify it in `base`, but also, `production`, `development` or `test`.
 
 #### Options
 
@@ -211,7 +254,7 @@ but the following keys are used when compiling assets.
 #### Default Assets
 Scripts and stylesheets are loaded from your application configuration.
 
-Entry is loaded from `config/webpack.config.js`. The acceptable formats are:
+Entry is loaded from your webpack config, specified in `pui-react-tools.js`. The acceptable formats are:
 
 * `entry: './path/to/your/entryComponent.js'`
 * `entry: ['./path/to/your/entryComponent.js', 'otherFile.js']`
@@ -231,12 +274,19 @@ Compiles your JavaScript entry with Webpack (expecting the `babel-loader` plugin
 Any presets or plugins in your `.babelrc` need to be in your `package.json`. For example, see the [react-starter](https://github.com/pivotal-cf/react-starter)
 `.babelrc` and `package.json` files.
 
+If your JavaScript files require a `.css` or `.scss` file, the default Webpack configuration will handle those for you.
+All `.css` files will be concatenated into a file called `components.css`. 
+All `.scss` files will be compiled, changing the extension to `.css` but keeping the base name.
+Assets required by css rules will also be included.
+
 #### sass
 
 Compiles `app/stylesheets/application.scss` with sass.
 
 * In development mode, generates a sourcemap
 * In production mode, minifies the css and adds vendor prefixes using [autoprefixer](https://github.com/postcss/autoprefixer)
+
+If you require your `application.scss` file in your JavaScript, you do not need to compile sass separately.
 
 #### images
 
