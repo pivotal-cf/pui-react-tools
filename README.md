@@ -44,6 +44,18 @@ Jasmine.install(options);
 
 #### Options
 
+##### options.appGlobs
+`Type: Array`
+`default: ['spec/app/**/*_spec.js']`
+
+The globs representing the Jasmine spec files for your application
+
+##### options.serverGlobs
+`Type: Array`
+`default: ['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js']`
+
+The globs representing the Jasmine spec files for your server
+
 ##### options.getAdditionalAppAssets
 `Type: Function`
 `default: noop`
