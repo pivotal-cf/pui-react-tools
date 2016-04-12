@@ -44,7 +44,7 @@ describe('AssetHelper', () => {
       });
     });
 
-    describe('when webpack.config specifies entry as a hash', () => {
+    describe('when webpack.config specifies entry as a hash with an "application" entry', () => {
       beforeEach(() => {
         webpackConfig = {
           entry: {
@@ -57,7 +57,22 @@ describe('AssetHelper', () => {
       });
     });
 
-    describe('when webpack.config specifies entry as a hash', () => {
+    describe('when webpack.config specifies entry as a hash without an "application" entry', () => {
+      beforeEach(() => {
+        webpackConfig = {
+          entry: {
+            page1: './app/components/page_1.js',
+            page2: './app/components/page_2.js'
+          }
+        };
+      });
+
+      it('returns the first entry', () => {
+        expect(subject.getEntry(webpackConfig)).toEqual('./app/components/page_1.js');
+      });
+    });
+
+    describe('when webpack.config specifies entry as an array', () => {
       beforeEach(() => {
         webpackConfig = {
           entry: {
