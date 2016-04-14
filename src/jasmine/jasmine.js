@@ -38,7 +38,7 @@ const Jasmine = {
   },
 
   serverAssets() {
-    return gulp.src(Jasmine.installOption.serverGlobs)
+    return gulp.src(Jasmine.installOptions.serverGlobs)
       .pipe(plumber());
   },
 
