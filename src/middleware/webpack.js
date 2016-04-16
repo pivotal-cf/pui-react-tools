@@ -1,7 +1,8 @@
-const devMiddleware = require('webpack-dev-middleware');
-const hotMiddleware = require('webpack-hot-middleware');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const invariant = require('invariant');
 
-let compiler;
+let compiler, devMiddleware;
 
 function getWebpackCompiler(env = 'development') {
   if (compiler) return compiler;
@@ -13,14 +14,26 @@ function getWebpackCompiler(env = 'development') {
 
 const middleware = {
   dev(options = {}) {
-    return devMiddleware(getWebpackCompiler(process.env.NODE_ENV), {
+    devMiddleware = webpackDevMiddleware(getWebpackCompiler(process.env.NODE_ENV), {
       overlay: true, noInfo: true, reload: true, stats: {colors: true},
       ...options
     });
+    return devMiddleware;
   },
 
   hot() {
-    return hotMiddleware(getWebpackCompiler(process.env.NODE_ENV));
+    return webpackHotMiddleware(getWebpackCompiler(process.env.NODE_ENV));
+  },
+
+  url(name) {
+    return (req, res, next) => {
+      invariant(devMiddleware, 'must add a webpack dev middleware first!');
+      const filename = devMiddleware.getFilenameFromUrl(name);
+      devMiddleware.fileSystem.readFile(filename, (err, content) => {
+        if (err) return next(err);
+        res.status(200).type('html').send(content);
+      });
+    };
   }
 };
 

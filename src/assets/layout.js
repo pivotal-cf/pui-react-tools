@@ -1,5 +1,4 @@
 const React = require('react');
-const ReactDOM = require('react-dom');
 const types = React.PropTypes;
 const Body = require('./body');
 
@@ -11,16 +10,11 @@ class Layout extends React.Component {
     title: types.string
   };
 
-  static init(Entry, props = {}) {
-    if (typeof document === 'undefined') return;
-    ReactDOM.render(<Entry {...props}/>, root);
-  }
-
   render() {
     let {stylesheets, title} = this.props;
     stylesheets = stylesheets.map((href, key) => (<link {...{rel: 'stylesheet', type: 'text/css', href, key}}/>));
     return (
-      <html lang="">
+      <html>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
