@@ -38,7 +38,7 @@ function htmlLoader(content) {
     regExp: query.regExp
   });
   this.emitFile(url, html);
-  return content;
+  return '';
 }
 
 module.exports = htmlLoader;
