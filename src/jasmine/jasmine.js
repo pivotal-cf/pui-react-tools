@@ -58,10 +58,11 @@ const Jasmine = {
     },
     specServer(){
       const env = processEnv({NODE_ENV: 'test'});
-      return Jasmine.serverAssets()
+      const stream = Jasmine.serverAssets()
         .pipe(env)
-        .pipe(jasmine({includeStackTrace: true}))
-        .pipe(env.restore());
+        .pipe(jasmine({includeStackTrace: true}));
+      stream.pipe(env.restore());
+      return stream;
     }
   }
 };
