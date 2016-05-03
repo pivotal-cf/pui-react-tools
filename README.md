@@ -71,7 +71,7 @@ options = {
 }
 ```
 
-#### options.browserSpecRunnerOptions
+##### options.browserSpecRunnerOptions
 `Type: Object`
 `default: {}`
 
@@ -83,7 +83,7 @@ options = {
 };
 ```
 
-#### options.headlessServerOptions
+##### options.headlessServerOptions
 `Type: Object`
 `default: {}`
 
@@ -133,7 +133,7 @@ NODE_ENV=development
 PORT=3000
 ```
 
-## Assets Module
+## Assets
 
 ### Configuration
 
@@ -278,6 +278,15 @@ If you provide no entry path, the entry component defaults to `./app/components/
 ##### html
     
 An `index.html` file is created. This file renders your basic app and loads scripts and stylesheets.
+
+We also provide a webpack loader to compile the html if you would prefer to combine all tasks into webpack.
+The loader is accessed as 'pui-react-tools/assets/entry-loader'. Using it looks like
+
+```js
+require('babel!pui-react-tools/assets/entry-loader?name=application.html!./components/application');
+```
+
+This example will compile the html with the file './components/application.js' rendering the html inside the body. 
 
 #### javascript
 
