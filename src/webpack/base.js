@@ -8,6 +8,7 @@ module.exports = {
   module: {
     loaders: [
       {test: [/\.svg(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.jpe?g(\?|$)/], include: /node_modules/, loader: 'file?name=[name]-[hash].[ext]'},
+      {test: [/\.svg(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.jpe?g(\?|$)/], exclude: /node_modules/, loader: 'file?name=[name].[ext]'},
       {test: /\.css$/, loader: extractCss.extract('css')},
       {test: /\.scss$/, loader: extractSass.extract(['css', 'sass'])},
       {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel'}

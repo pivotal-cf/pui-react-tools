@@ -12,7 +12,7 @@ module.exports = {
   externals: null,
   module: {
     loaders: [
-      {test: [/\.svg(\?|$)/, /\.png(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.jpe?g(\?|$)/], include: /node_modules/, loader: 'file?name=[name]-[hash].[ext]'},
+      {test: [/\.svg(\?|$)/, /\.png(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.jpe?g(\?|$)/], loader: 'url'},
       {test: /\.css$/, exclude: /typography/, loaders: ['style', 'css?sourceMap']},
       {test: /\.css$/, include: /typography/, loaders: ['style', 'css']},
       {test: /\.scss$/, loaders: ['style', 'css?sourceMap', 'sass?sourceMap']},
