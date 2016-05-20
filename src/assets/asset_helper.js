@@ -3,11 +3,14 @@ const path = require('path');
 
 function assetPath(asset, options = {}) {
   const defaultManifestPath = path.join(process.cwd(), 'public', 'rev-manifest.json');
-  const {assetHost, assetPort, manifestPath = defaultManifestPath} = options;
+  const {assetHost, assetPort, useRevManifest = true, manifestPath = defaultManifestPath} = options;
   if (assetHost) return `//${join(...[[assetHost, assetPort].filter(Boolean).join(':'), asset])}`;
+
+  if(!useRevManifest) return `/${asset}`;
   let revManifest;
   try {
     revManifest = require(manifestPath);
+
   } catch(e) {
     revManifest = {};
   }

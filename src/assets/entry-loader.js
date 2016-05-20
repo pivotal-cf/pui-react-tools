@@ -5,9 +5,9 @@ const React = require('react');
 function compile(Entry, Layout) {
   const {assetPath} = require('./asset_helper');
   const config = require('./config');
-  let {assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = config;
+  let {assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title', useRevManifest} = config;
 
-  const assetConfig = {assetHost, assetPort};
+  const assetConfig = {assetHost, assetPort, useRevManifest};
   const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
   const scriptPaths = [
     '/config.js',

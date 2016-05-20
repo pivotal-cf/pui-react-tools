@@ -8,6 +8,13 @@ describe('AssetHelper', () => {
   });
 
   describe('#assetPath', () => {
+    let manifestPath;
+
+    beforeEach(() => {
+      const path = require('path');
+      manifestPath = path.join(__dirname, 'fixtures', 'rev-manifest.json');
+    });
+
     describe('when there is a config with an asset host and asset port', () => {
       const filename = 'file.png';
       const assetHost = 'localhost';
@@ -15,6 +22,21 @@ describe('AssetHelper', () => {
       it('returns the asset on the server', () => {
         expect(subject.assetPath(filename, {assetHost, assetPort})).toEqual(`//${assetHost}:${assetPort}/${filename}`);
         expect(subject.assetPath(filename, {assetHost})).toEqual(`//${assetHost}/${filename}`);
+      });
+    });
+
+    describe('when useRevManifest is not false', () => {
+      const filename = 'file.png';
+      it('returns the filename from the manifest', () => {
+        expect(subject.assetPath(filename, {manifestPath})).toContain(`/${filename}-`);
+      });
+    });
+
+    describe('when useRevManifest is false', () => {
+      const useRevManifest = false;
+      const filename = 'file.png';
+      it('returns the filename', () => {
+        expect(subject.assetPath(filename, {manifestPath, useRevManifest})).toEqual(`/${filename}`);
       });
     });
   });

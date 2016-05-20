@@ -87,7 +87,7 @@ const Assets = {
     const {assetPath, getEntry} = require('./asset_helper');
     const entry = getEntry(webpackConfig);
     const config = require('./config');
-    let {assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title'} = config;
+    let {assetHost, assetPort, scripts = ['application.js'], stylesheets = ['application.css'], title = 'The default title', useRevManifest} = config;
     let stream = gulp.src(entry).pipe(plugins.plumber());
 
     if(watch) {
@@ -101,7 +101,7 @@ const Assets = {
         [entryPath, file.path, './layout'].map(require.resolve).forEach(f => delete require.cache[f]);
         try {
           const Layout = Assets.installOptions.Layout || Assets.Layout;
-          const assetConfig = {assetHost, assetPort};
+          const assetConfig = {assetHost, assetPort, useRevManifest};
           const stylesheetPaths = stylesheets.map(f => assetPath(f, assetConfig));
           const scriptPaths = [
             '/config.js',
