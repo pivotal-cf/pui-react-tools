@@ -30,7 +30,10 @@ const middleware = {
       invariant(devMiddleware, 'must add a webpack dev middleware first!');
       const filename = devMiddleware.getFilenameFromUrl(name);
       devMiddleware.fileSystem.readFile(filename, (err, content) => {
-        if (err) return next(err);
+        if (err) {
+          next(err);
+          return;
+        }
         res.status(200).type('html').send(content);
       });
     };

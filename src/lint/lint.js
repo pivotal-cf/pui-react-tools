@@ -12,10 +12,11 @@ function lint() {
     .pipe(() => gulpIf(file => {
           const fixed = file.eslint && typeof file.eslint.output === 'string';
 
-          if (fixed) {
+          if(fixed) {
             log(colors.yellow(`fixed an error in ${file.eslint.filePath}`));
             return true;
           }
+          return false;
         },
         gulp.dest('.'))
       )
