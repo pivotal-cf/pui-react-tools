@@ -71,6 +71,18 @@ options = {
 }
 ```
 
+##### options.serverOptions
+`Type: Object`
+`default: {}`
+
+Options to pass to the spec server in node specs.
+Example
+```js
+options = {
+  serverOptions: {verbose: true}
+};
+```
+
 ##### options.browserSpecRunnerOptions
 `Type: Object`
 `default: {}`

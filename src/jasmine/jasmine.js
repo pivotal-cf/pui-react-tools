@@ -12,6 +12,7 @@ const Jasmine = {
     headlessAppAssetsOptions: {},
     headlessServerOptions: {},
     headlessSpecRunnerOptions: {},
+    serverOptions: {},
     appGlobs: ['spec/app/**/*_spec.js'],
     serverGlobs: ['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js']
   },
@@ -58,11 +59,10 @@ const Jasmine = {
     },
     specServer(){
       const env = processEnv({NODE_ENV: 'test'});
-      const stream = Jasmine.serverAssets()
+      return Jasmine.serverAssets()
         .pipe(env)
-        .pipe(jasmine({includeStackTrace: true}));
-      stream.pipe(env.restore());
-      return stream;
+        .pipe(jasmine({includeStackTrace: true, ...Jasmine.installOptions.serverOptions}))
+        .pipe(env.restore());
     }
   }
 };
