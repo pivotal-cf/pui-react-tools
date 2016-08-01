@@ -7,7 +7,7 @@ const path = require('path');
 const plugins = require('gulp-load-plugins')();
 const React = require('react');
 const ReactDOMServer = require('react-dom/server');
-const {readable} = require('event-stream');
+const {obj: from} = require('from2');
 const spy = require('through2-spy');
 const webpack = require('webpack-stream');
 
@@ -125,14 +125,13 @@ const Assets = {
     let configOptions = require('./config');
     const globalNamespace = configOptions.globalNamespace || 'Application';
     let configOptionsJSON = JSON.stringify(configOptions);
-    return readable(function(_, cb) {
+    return from(function() {
       const configContents = new File({
         path: 'config.js',
         contents: new Buffer(`window.${globalNamespace} = {config: ${configOptionsJSON}}`)
       });
-      this.emit('data', configContents);
-      this.emit('end');
-      cb();
+      this.push(configContents);
+      this.push(null);
     });
   },
 
