@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const mergeStream = require('merge-stream');
 const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
 const webpack = require('webpack-stream');
+const pipe = require('multipipe');
 
 const Jasmine = {
   installOptions: {
@@ -57,12 +58,14 @@ const Jasmine = {
         .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
         .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessServerOptions}));
     },
-    specServer(){
+    specServer() {
       const env = processEnv({NODE_ENV: 'test'});
-      return Jasmine.serverAssets()
-        .pipe(env)
-        .pipe(jasmine({includeStackTrace: true, ...Jasmine.installOptions.serverOptions}))
-        .pipe(env.restore());
+      return pipe(
+        Jasmine.serverAssets(),
+        env,
+        jasmine({includeStackTrace: true, ...Jasmine.installOptions.serverOptions}),
+        env.restore()
+      );
     }
   }
 };
