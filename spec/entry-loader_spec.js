@@ -15,7 +15,7 @@ describe('EntryLoader', () => {
     /* eslint-disable no-unused-vars */
     class Entry extends React.Component {
       render() {
-        return (<div className="the-entry"></div>);
+        return (<div className="the-entry"/>);
       }
     }
     /* eslint-enable no-unused-vars */
