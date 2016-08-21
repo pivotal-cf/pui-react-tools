@@ -25,13 +25,16 @@ const Jasmine = {
     gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
-  appAssets(options = {}, gulpOptions = {}) {
-    const {plugins, ...rest} = options;
-    const testConfig = require('../webpack/webpack.config')('test', rest);
-    const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
-    const javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions)
-      .pipe(plumber())
-      .pipe(webpack(webpackConfig));
+  appAssets(options, gulpOptions = {}) {
+    let javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions).pipe(plumber());
+
+    if (options !== false) {
+      const {plugins, ...rest} = options || {};
+      const testConfig = require('../webpack/webpack.config')('test', rest);
+      const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
+      javascript = javascript.pipe(webpack(webpackConfig));
+    }
+
     return mergeStream(
       javascript,
       gulp.src(require.resolve('./jasmine.css'), gulpOptions),
