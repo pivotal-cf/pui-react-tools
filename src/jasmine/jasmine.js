@@ -25,22 +25,22 @@ const Jasmine = {
     gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
-  appAssets(options = {}) {
+  appAssets(options = {}, gulpOptions = {}) {
     const {plugins, ...rest} = options;
     const testConfig = require('../webpack/webpack.config')('test', rest);
     const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
-    const javascript = gulp.src(Jasmine.installOptions.appGlobs)
+    const javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions)
       .pipe(plumber())
       .pipe(webpack(webpackConfig));
     return mergeStream(
       javascript,
-      gulp.src(require.resolve('./jasmine.css')),
+      gulp.src(require.resolve('./jasmine.css'), gulpOptions),
       ...(Jasmine.installOptions.getAdditionalAppAssets())
     );
   },
 
-  serverAssets() {
-    return gulp.src(Jasmine.installOptions.serverGlobs)
+  serverAssets(gulpOptions = {}) {
+    return gulp.src(Jasmine.installOptions.serverGlobs, gulpOptions)
       .pipe(plumber());
   },
 
