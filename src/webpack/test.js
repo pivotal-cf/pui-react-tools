@@ -5,7 +5,7 @@ module.exports = {
   entry: null,
   module: {
     loaders: [
-      {test: [/\.png(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.jpe?g(\?|$)/], loader: 'url'},
+      {test: [/\.png(\?|$)/, /\.gif(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.jpe?g(\?|$)/], loader: 'url'},
       {test: [/\.svg(\?|$)/], include: /node_modules/, loader: 'url'},
       {test: /\.css$/, loader: extractCss.extract('css')},
       {test: /\.scss$/, loader: extractSass.extract(['css?sourceMap', 'sass?sourceMap'])},
