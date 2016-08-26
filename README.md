@@ -167,6 +167,8 @@ The assets tasks expects:
 Example files can be found in the [react-starter](https://github.com/pivotal-cf/react-starter) project in the `config` 
 directory.
 
+#### Webpack Config
+
 Pui React Tools uses Webpack to compile most assets. There is a lot of configuration required to do this correctly and a default configuration is provided.
 If you would like to change the webpack configuration, you can store the option in a file `pui-react-tools.js`. This file should export an options object with the `webpack` key
 
@@ -193,6 +195,13 @@ Note that there are internal environment specific overrides within Pui React Too
 This means that if you need to change Webpack config across all environments, you may have to specify it in `base`, but also, `production`, `development` or `test`.
 
 #### Options
+
+Most configuration of the assets task is from sending options into `Assets.install`:
+```js
+const Assets = require('pui-react-tools').Assets;
+Assets.install(options);
+```
+The available options are:
 
 ##### options.assets
 
