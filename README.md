@@ -196,7 +196,7 @@ This means that if you need to change Webpack config across all environments, yo
 
 #### Options
 
-Most configuration of the assets task is from sending options into `Assets.install`:
+Most configuration of the assets task is acheived by options given to `Assets.install`:
 ```js
 const Assets = require('pui-react-tools').Assets;
 Assets.install(options);
