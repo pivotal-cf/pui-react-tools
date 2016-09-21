@@ -39,6 +39,23 @@ describe('AssetHelper', () => {
         expect(subject.assetPath(filename, {manifestPath, useRevManifest})).toEqual(`/${filename}`);
       });
     });
+
+    describe('external script paths', () => {
+      const externalPath = 'https://google.com/maps.js';
+      it('does not mutate external paths by default', () => {
+        expect(subject.assetPath(externalPath)).toEqual(externalPath);
+      });
+
+      it('does not mutate external paths when there is an asset host', () => {
+        const assetHost = 'localhost';
+        const assetPort = '3001';
+        expect(subject.assetPath(externalPath, {assetHost, assetPort})).toEqual(externalPath);
+      });
+
+      it('does not mutate external paths when there is a manifest', () => {
+        expect(subject.assetPath(externalPath, {manifestPath, useRevManifest: true})).toEqual(externalPath);
+      });
+    });
   });
 
   describe('#getEntry', () => {

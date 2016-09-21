@@ -1,7 +1,10 @@
 const join = require('url-join');
 const path = require('path');
+const Url = require('url');
 
 function assetPath(asset, options = {}) {
+  if (Url.parse(asset).host) return asset;
+
   const defaultManifestPath = path.join(process.cwd(), 'public', 'rev-manifest.json');
   const {assetHost, assetPort, useRevManifest = true, manifestPath = defaultManifestPath} = options;
   if (assetHost) return `//${join(...[[assetHost, assetPort].filter(Boolean).join(':'), asset])}`;
