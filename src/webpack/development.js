@@ -13,7 +13,6 @@ module.exports = {
   module: {
     loaders: [
       {test: [/\.png(\?|$)/, /\.gif(\?|$)/, /\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.jpe?g(\?|$)/], loader: 'url'},
-      {test: [/\.svg(\?|$)/], include: /node_modules/, loader: 'url'},
       {test: /\.css$/, exclude: /typography/, loaders: ['style', 'css?sourceMap']},
       {test: /\.css$/, include: /typography/, loaders: ['style', 'css']},
       {test: /\.scss$/, loaders: ['style', 'css?sourceMap', 'sass?sourceMap']},
