@@ -1,31 +1,36 @@
 const path = require('path');
 
-let userWebpackConfig = {};
-try {
-  userWebpackConfig = require(path.join(process.cwd(), 'pui-react-tools')).webpack;
-} catch(e) {
-  
+function getUserWebpackConfig() {
+  try {
+    return require(path.join(process.cwd(), 'pui-react-tools')).webpack;
+  } catch (e) {}
+
+  try {
+    return require(path.join(process.cwd(), '.react-tools')).webpack;
+  } catch (e) {}
+
+  return {};
 }
 
 module.exports = function(env, options = {}) {
   let envConfig = {};
   try {
     envConfig = require(`./${env}`);
-  } catch(e) {
-    
+  } catch (e) {
+
   }
-  
-  const userEnvConfig = userWebpackConfig[env];
-  
+
+  const userEnvConfig = getUserWebpackConfig()[env];
+
   const baseConfig = require('./base');
-  
-  const userBaseConfig = userWebpackConfig.base;
+
+  const userBaseConfig = getUserWebpackConfig().base;
 
   return {
-    ...baseConfig, 
-    ...(userBaseConfig || {}), 
-    ...envConfig, 
-    ...(userEnvConfig || {}), 
+    ...baseConfig,
+    ...(userBaseConfig || {}),
+    ...envConfig,
+    ...(userEnvConfig || {}),
     ...options
   };
 };
