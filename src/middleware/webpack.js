@@ -8,7 +8,7 @@ function getWebpackCompiler(env = 'development') {
   if (compiler) return compiler;
   const webpack = require('webpack');
   const webpackConfig = require('../webpack/webpack.config')(env);
-  compiler = webpack(webpackConfig || {});
+  compiler = webpack(webpackConfig);
   return compiler;
 }
 
