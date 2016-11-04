@@ -5,7 +5,8 @@ const {assetHost, assetPort} = require('../assets/config');
 const publicPath = assetHost ? `//${assetHost}:${assetPort}/` : '/';
 
 module.exports = {
-  devtool: 'cheap-module-source-map',
+  cache: true,
+  devtool: 'source-map',
   entry: {
     application: ['./app/components/application.js', `webpack-hot-middleware/client?path=${`${publicPath}__webpack_hmr`}`]
   },
