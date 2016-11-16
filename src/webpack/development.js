@@ -17,7 +17,7 @@ module.exports = {
       {test: /\.css$/, exclude: /typography/, loaders: ['style', 'css?sourceMap']},
       {test: /\.css$/, include: /typography/, loaders: ['style', 'css']},
       {test: /\.scss$/, loaders: ['style', 'css?sourceMap', 'sass?sourceMap']},
-      {test: /\.jsx?$/, exclude: /node_modules/, loaders: ['react-hot', 'babel']}
+      {test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel']}
     ]
   },
   output: {
