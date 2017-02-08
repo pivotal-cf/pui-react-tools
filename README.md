@@ -107,6 +107,8 @@ options = {
 };
 ```
 
+For additional options (e.g. `isVerbose`), see [jasmine-terminal-reporter](https://github.com/jbblanchet/jasmine-terminal-reporter).
+
 ### Usage
 
 * `gulp jasmine` starts the jasmine server. The server starts at port 8888 by default.
