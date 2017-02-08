@@ -107,7 +107,7 @@ options = {
 };
 ```
 
-For additional options (e.g. `isVerbose`), see [jasmine-terminal-reporter](https://github.com/jbblanchet/jasmine-terminal-reporter).
+For additional options (e.g. `isVerbose`), see [gulp-jasmine-browser](https://github.com/jasmine/gulp-jasmine-browser) and [jasmine-terminal-reporter](https://github.com/jbblanchet/jasmine-terminal-reporter).
 
 ### Usage
 
