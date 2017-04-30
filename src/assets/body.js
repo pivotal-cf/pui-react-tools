@@ -1,6 +1,6 @@
 const React = require('react');
 const ReactDOMServer = require('react-dom/server');
-const types = React.PropTypes;
+const types = require('prop-types');
 
 const Body = ({entry, scripts, className, ...props}) => {
   scripts = scripts.map((src, key) => (<script {...{type: 'text/javascript', src, key}}/>));
