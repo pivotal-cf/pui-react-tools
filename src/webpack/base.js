@@ -1,4 +1,4 @@
-const {extractCss, extractSass, noErrors} = require('./webpack.plugins.js');
+const {extractCss, extractSass, noEmitOnErrors} = require('./webpack.plugins.js');
 
 module.exports = {
   bail: false,
@@ -6,12 +6,12 @@ module.exports = {
     application: './app/components/application.js'
   },
   module: {
-    loaders: [
-      {test: [/\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.gif(\?|$)/, /\.jpe?g(\?|$)/], include: /node_modules/, loader: 'file?name=[name]-[hash].[ext]'},
-      {test: [/\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.gif(\?|$)/, /\.jpe?g(\?|$)/], exclude: /node_modules/, loader: 'file?name=[name].[ext]'},
-      {test: /\.css$/, loader: extractCss.extract('css')},
-      {test: /\.scss$/, loader: extractSass.extract(['css', 'sass'])},
-      {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel'}
+    rules: [
+      {test: [/\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.gif(\?|$)/, /\.jpe?g(\?|$)/], include: /node_modules/, loader: 'file-loader?name=[name]-[hash].[ext]'},
+      {test: [/\.eot(\?|$)/, /\.ttf(\?|$)/, /\.woff2?(\?|$)/, /\.png(\?|$)/, /\.gif(\?|$)/, /\.jpe?g(\?|$)/], exclude: /node_modules/, loader: 'file-loader?name=[name].[ext]'},
+      {test: /\.css$/, use: extractCss.extract('css-loader')},
+      {test: /\.scss$/, use: extractSass.extract(['css-loader', 'sass-loader'])},
+      {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'}
     ]
   },
   output: {
@@ -19,7 +19,7 @@ module.exports = {
     chunkFilename: '[id].js'
   },
   plugins: [
-    noErrors,
+    noEmitOnErrors,
     extractCss,
     extractSass
   ]

@@ -1,5 +1,5 @@
 const DefinePlugin = require('webpack/lib/DefinePlugin');
-const {extractCss, extractSass, noErrors} = require('./webpack.plugins');
+const {extractCss, extractSass, noEmitOnErrors} = require('./webpack.plugins');
 const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
 
 module.exports = {
@@ -9,8 +9,8 @@ module.exports = {
         'NODE_ENV': '"production"'
       }
     }),
-    new UglifyJsPlugin({compress: {warnings: false}, sourceMap: false}),
-    noErrors,
+    new UglifyJsPlugin(),
+    noEmitOnErrors,
     extractCss,
     extractSass
   ]

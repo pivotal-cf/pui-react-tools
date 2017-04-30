@@ -32,7 +32,8 @@ const Jasmine = {
       const {plugins, ...rest} = options || {};
       const testConfig = require('../webpack/webpack.config')('test', rest);
       const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
-      javascript = javascript.pipe(webpack(webpackConfig));
+      delete webpackConfig.browserAppAssetsOptions;
+      javascript = javascript.pipe(webpack(webpackConfig, require('webpack')));
     }
 
     return mergeStream(
