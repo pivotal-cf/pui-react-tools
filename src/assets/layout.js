@@ -1,5 +1,5 @@
 const React = require('react');
-const types = React.PropTypes;
+const types = require('prop-types');
 const Body = require('./body');
 
 class Layout extends React.Component {
