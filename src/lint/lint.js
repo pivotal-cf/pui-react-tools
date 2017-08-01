@@ -4,7 +4,7 @@ const gulp = require('gulp');
 const {log, colors} = require('gulp-util');
 
 function lint() {
-  const {FIX: fix = true} = process.env;
+  const fix = process.env.FIX !== 'false';
   return lazypipe()
     .pipe(() => plumber())
     .pipe(() => eslint({fix}))
