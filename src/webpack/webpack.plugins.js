@@ -1,8 +1,8 @@
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
-const NoErrorsPlugin = require('webpack/lib/NoErrorsPlugin');
+const NoEmitOnErrorsPlugin = require('webpack/lib/NoEmitOnErrorsPlugin');
 
-const extractCss = new ExtractTextWebpackPlugin('css', 'components.css');
-const extractSass = new ExtractTextWebpackPlugin('application-sass', '[name].css');
-const noErrors = new NoErrorsPlugin();
+const extractCss = new ExtractTextWebpackPlugin({filename: 'components.css'});
+const extractSass = new ExtractTextWebpackPlugin({filename: '[name].css'});
+const noEmitOnErrors = new NoEmitOnErrorsPlugin();
 
-module.exports = {extractCss, extractSass, noErrors};
+module.exports = {extractCss, extractSass, noEmitOnErrors};

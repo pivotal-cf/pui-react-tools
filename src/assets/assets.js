@@ -143,7 +143,7 @@ const Assets = {
     const cssFilter = plugins.filter('*.css', {restore: true});
     return gulp.src([entry])
       .pipe(plugins.plumber())
-      .pipe(webpack(webpackConfig))
+      .pipe(webpack(webpackConfig, require('webpack')))
       .pipe(cssFilter)
       .pipe(plugins.autoprefixer())
       .pipe(cssFilter.restore);
