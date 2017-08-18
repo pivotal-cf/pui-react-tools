@@ -1,3 +1,4 @@
+import webpackCompiler from 'webpack';
 const gulp = require('gulp');
 const mergeStream = require('merge-stream');
 const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
@@ -6,11 +7,9 @@ const pipe = require('multipipe');
 
 const Jasmine = {
   installOptions: {
-    browserAppAssetsOptions: {},
     browserServerOptions: {},
     browserSpecRunnerOptions: {},
     getAdditionalAppAssets: () => [],
-    headlessAppAssetsOptions: {},
     headlessServerOptions: {},
     headlessSpecRunnerOptions: {},
     serverOptions: {},
@@ -26,18 +25,17 @@ const Jasmine = {
   },
 
   appAssets(options, gulpOptions = {}) {
+    //TODO: validate webpack.test exists and throw useful error message
     let javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions).pipe(plumber());
-
     if (options !== false) {
       const {plugins, ...rest} = options || {};
-      const testConfig = require('../webpack/webpack.config')('test', rest);
-      const webpackConfig = Object.assign({}, testConfig, options, {plugins: (testConfig.plugins || []).concat(plugins || [])});
-      javascript = javascript.pipe(webpack(webpackConfig));
+      const testConfig = {...Jasmine.installOptions.webpack.test(), ...rest};
+      const config = {...testConfig, ...rest, ...{plugins: (testConfig.plugins || []).concat(plugins || [])}};
+      javascript = javascript.pipe(webpack({config, quiet: true, watch: config.watch}, webpackCompiler));
     }
 
     return mergeStream(
       javascript,
-      gulp.src(require.resolve('./jasmine.css'), gulpOptions),
       ...(Jasmine.installOptions.getAdditionalAppAssets())
     );
   },
@@ -50,14 +48,14 @@ const Jasmine = {
   tasks: {
     jasmine() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
-      const {browserAppAssetsOptions, browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
-      return Jasmine.appAssets({plugins: [plugin], browserAppAssetsOptions})
+      const {browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
+      return Jasmine.appAssets({plugins: [plugin]})
         .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
         .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}));
     },
     specApp() {
-      const {headlessAppAssetsOptions, headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
-      return Jasmine.appAssets({watch: false, ...headlessAppAssetsOptions})
+      const {headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
+      return Jasmine.appAssets({watch: false})
         .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
         .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessServerOptions}));
     },
@@ -73,4 +71,4 @@ const Jasmine = {
   }
 };
 
-module.exports = Jasmine;
+export default Jasmine;

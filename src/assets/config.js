@@ -1,33 +1,51 @@
-const fs = require('fs');
 const camelCase = require('lodash.camelcase');
 const path = require('path');
 
-let env = {};
+function getEnv() {
+  let env = {};
 
-try {
-  env = require(path.join(process.cwd(), 'config', 'env.json')).reduce((memo, key) => {
-    if (key in process.env) {
-      const keyCamelCase = camelCase(key);
-      if (key.startsWith('USE_')) {
-        memo[keyCamelCase] = String(process.env[key]) !== 'false';
-      } else {
-        memo[keyCamelCase] = process.env[key];
+  try {
+    env = require(path.join(process.cwd(), 'config', 'env.json')).reduce((memo, key) => {
+      if (key in process.env) {
+        const keyCamelCase = camelCase(key);
+        let value = process.env[key];
+
+        if(String(value) === 'false') value = false;
+        if(String(value) === 'true') value = true;
+
+        memo[keyCamelCase] = value;
       }
-    }
-    return memo;
-  }, {});
-} catch(e) {
+      return memo;
+    }, {});
+  } catch(e) {
 
+  }
+
+  return env;
+}
+
+function exists(filename) {
+  try {
+    require(filename);
+    return true;
+  } catch(e) {
+    if (!e.message.includes('Cannot find module')) {
+      throw e;
+    }
+    return false;
+  }
 }
 
 function requireEnvFile(...files) {
+  const currentDirectory = process.cwd();
   return files
-    .map(filename => path.join(process.cwd(), 'config', `${filename}.json`))
-    .filter(fs.existsSync)
+    .map(filename => path.join(currentDirectory, 'config', `${filename}.json`))
+    .filter(exists)
     .map(filename => require(filename));
 }
 
-const config = [...requireEnvFile('application', process.env.NODE_ENV || 'development'), env, ...requireEnvFile('local')]
-  .reduce((memo, json) => ({...memo, ...json}), {});
-
-module.exports = config;
+module.exports = function() {
+  const config = [...requireEnvFile('application', process.env.NODE_ENV || 'development'), getEnv(), ...requireEnvFile('local')]
+    .reduce((memo, json) => ({...memo, ...json}), {});
+  return config;
+};
