@@ -19,6 +19,7 @@ const Assets = {
     gulp.task('clean-assets', Assets.tasks.cleanAssets);
     gulp.task('assets', Assets.tasks.assets);
     gulp.task('assets-config', Assets.tasks.assetsConfig);
+    //TODO: Add 'dev-server' task (see react-starter/v3)
   },
 
   config() {
