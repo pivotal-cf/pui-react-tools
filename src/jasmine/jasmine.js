@@ -34,7 +34,10 @@ const Jasmine = {
       } catch(e) {
         throw new Error(`Attempting to load webpack config for pui-react-tools, got error:
         ${e}
-        Jasmine.install must be given config like {webpack: {test: () => {return webpackConfiguration}}}`);
+        Jasmine.install must be given config like {webpack: {test: () => {return webpackConfiguration}}}
+        See https://github.com/pivotal-cf/pui-react-tools#jasmine
+        
+        `);
       }
       const testConfig = {...webpackConfig, ...rest};
       const config = {...testConfig, ...rest, ...{plugins: (testConfig.plugins || []).concat(plugins || [])}};
