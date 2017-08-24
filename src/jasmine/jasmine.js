@@ -30,7 +30,7 @@ const Jasmine = {
       const {plugins, ...rest} = options || {};
       let webpackConfig;
       try {
-        webpackConfig = Jasmine.installOptions.webpack.test()
+        webpackConfig = Jasmine.installOptions.webpack.test();
       } catch(e) {
         throw new Error(`Attempting to load webpack config for pui-react-tools, got error:
         ${e}
