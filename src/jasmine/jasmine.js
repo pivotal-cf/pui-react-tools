@@ -25,11 +25,18 @@ const Jasmine = {
   },
 
   appAssets(options, gulpOptions = {}) {
-    //TODO: validate webpack.test exists and throw useful error message
     let javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions).pipe(plumber());
     if (options !== false) {
       const {plugins, ...rest} = options || {};
-      const testConfig = {...Jasmine.installOptions.webpack.test(), ...rest};
+      let webpackConfig;
+      try {
+        webpackConfig = Jasmine.installOptions.webpack.test()
+      } catch(e) {
+        throw new Error(`Attempting to load webpack config for pui-react-tools, got error:
+        ${e}
+        Jasmine.install must be given config like {webpack: {test: () => {return webpackConfiguration}}}`);
+      }
+      const testConfig = {...webpackConfig, ...rest};
       const config = {...testConfig, ...rest, ...{plugins: (testConfig.plugins || []).concat(plugins || [])}};
       javascript = javascript.pipe(webpack({config, quiet: true, watch: config.watch}, webpackCompiler));
     }
