@@ -1,4 +1,4 @@
-#Tools for gulp tasks for React
+# Tools for gulp tasks for React
 
 There are four modules included in pui-react-tools:
 
@@ -252,7 +252,7 @@ Assets.install({
 });
 ```
 
-Note that for the example, you will need to install `sass-loader`, `css-loader` and `style-loader`. You will also need to install `babel-loader` and any related Babel plugins and presets you need, like `babel-preset-react`. See [react-starter](https://github.com/pivotal-cf/react-starter) for examples of more fully-featured webpack configurations.
+Note that for the example, you will need to install `sass-loader`, `css-loader` and `style-loader`. You will also need to install `babel-loader` and any related Babel plugins and presets you need, like `babel-preset-react`. See [react-starter/config/webpack](https://github.com/pivotal-cf/react-starter/tree/master/config/webpack) for examples of more fully-featured webpack configurations.
 
 #### User Application Configuration
 
