@@ -4,6 +4,12 @@ const mergeStream = require('merge-stream');
 const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
 const webpack = require('webpack-stream');
 const pipe = require('multipipe');
+const del = require('del');
+const portastic = require('portastic');
+const minimist = require('minimist');
+const {obj: through} = require('through2');
+
+let port;
 
 const Jasmine = {
   installOptions: {
@@ -19,8 +25,12 @@ const Jasmine = {
 
   install(installOptions = {}) {
     Object.assign(Jasmine.installOptions, installOptions);
-    gulp.task('jasmine', Jasmine.tasks.jasmine);
-    gulp.task('spec-app', Jasmine.tasks.specApp);
+    gulp.task('clear-jasmine', Jasmine.tasks.clearJasmine);
+    gulp.task('detect-jasmine', Jasmine.tasks.detectJasmine);
+    gulp.task('run-jasmine', ['clear-jasmine'], Jasmine.tasks.runJasmine);
+    gulp.task('jasmine', ['run-jasmine']);
+    gulp.task('run-spec', ['detect-jasmine'], Jasmine.tasks.runSpec);
+    gulp.task('spec-app', ['run-spec']);
     gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
@@ -31,7 +41,7 @@ const Jasmine = {
       let webpackConfig;
       try {
         webpackConfig = Jasmine.installOptions.webpack.test();
-      } catch(e) {
+      } catch (e) {
         throw new Error(`Attempting to load webpack config for pui-react-tools, got error:
         ${e}
         Jasmine.install must be given config like {webpack: {test: () => {return webpackConfiguration}}}
@@ -56,18 +66,31 @@ const Jasmine = {
   },
 
   tasks: {
-    jasmine() {
+    clearJasmine() {
+      return del('tmp/jasmine/**');
+    },
+    async detectJasmine() {
+      port = null;
+      if (!await portastic.test(8888)) port = 8888;
+    },
+    runJasmine() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
       const {browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
       return Jasmine.appAssets({plugins: [plugin]})
         .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
-        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}));
+        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}))
+        .pipe(gulp.dest('tmp/jasmine'));
     },
-    specApp() {
+    runSpec() {
       const {headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
-      return Jasmine.appAssets({watch: false})
+      const {file} = minimist(process.argv.slice(2), {string: 'file'});
+      return (port ? gulp.src('tmp/jasmine/**/*') : Jasmine.appAssets({watch: false}))
         .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
-        .pipe(jasmineBrowser.headless({driver: 'phantomjs', ...headlessServerOptions}));
+        .pipe(jasmineBrowser.headless({driver: 'chrome', file, port, ...headlessServerOptions}))
+        .pipe(through((data, enc, next) => next(), flush => {
+          port = null;
+          flush();
+        }));
     },
     specServer() {
       const env = processEnv({NODE_ENV: 'test'});
