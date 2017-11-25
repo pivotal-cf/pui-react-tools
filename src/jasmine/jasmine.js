@@ -1,9 +1,9 @@
 import webpackCompiler from 'webpack';
+import pipe from 'multipipe';
 const gulp = require('gulp');
 const mergeStream = require('merge-stream');
 const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
 const webpack = require('webpack-stream');
-const pipe = require('multipipe');
 const del = require('del');
 const portastic = require('portastic');
 const minimist = require('minimist');
@@ -25,17 +25,17 @@ const Jasmine = {
 
   install(installOptions = {}) {
     Object.assign(Jasmine.installOptions, installOptions);
-    gulp.task('clear-jasmine', Jasmine.tasks.clearJasmine);
-    gulp.task('detect-jasmine', Jasmine.tasks.detectJasmine);
-    gulp.task('run-jasmine', ['clear-jasmine'], Jasmine.tasks.runJasmine);
-    gulp.task('jasmine', ['run-jasmine']);
-    gulp.task('run-spec', ['detect-jasmine'], Jasmine.tasks.runSpec);
-    gulp.task('spec-app', ['run-spec']);
+    gulp.task('jasmine-clear', Jasmine.tasks.jasmineClear);
+    gulp.task('jasmine-detect', Jasmine.tasks.jasmineDetect);
+    gulp.task('jasmine-run', ['jasmine-clear'], Jasmine.tasks.jasmineRun);
+    gulp.task('jasmine', ['jasmine-run']);
+    gulp.task('spec-app-run', ['jasmine-detect'], Jasmine.tasks.specAppRun);
+    gulp.task('spec-app', ['spec-app-run']);
     gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
   appAssets(options, gulpOptions = {}) {
-    let javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions).pipe(plumber());
+    let javascript = gulp.src(Jasmine.installOptions.appGlobs, gulpOptions);
     if (options !== false) {
       const {plugins, ...rest} = options || {};
       let webpackConfig;
@@ -62,32 +62,32 @@ const Jasmine = {
 
   serverAssets(gulpOptions = {}) {
     return gulp.src(Jasmine.installOptions.serverGlobs, gulpOptions)
-      .pipe(plumber());
   },
 
   tasks: {
-    clearJasmine() {
+    jasmineClear() {
       return del('tmp/jasmine/**');
     },
-    async detectJasmine() {
+    async jasmineDetect() {
       port = null;
       if (!await portastic.test(8888)) port = 8888;
     },
-    runJasmine() {
+    jasmineRun() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
       const {browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
       return Jasmine.appAssets({plugins: [plugin]})
+        .pipe(plumber())
         .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
         .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}))
         .pipe(gulp.dest('tmp/jasmine'));
     },
-    runSpec() {
+    specAppRun() {
       const {headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
       const {file} = minimist(process.argv.slice(2), {string: 'file'});
       return (port ? gulp.src('tmp/jasmine/**/*') : Jasmine.appAssets({watch: false}))
         .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
         .pipe(jasmineBrowser.headless({driver: 'chrome', file, port, ...headlessServerOptions}))
-        .pipe(through((data, enc, next) => next(), flush => {
+        .pipe(through((data, enc, next) => next(null, data), flush => {
           port = null;
           flush();
         }));
