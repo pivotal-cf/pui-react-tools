@@ -1,5 +1,4 @@
 import webpackCompiler from 'webpack';
-import pipe from 'multipipe';
 const gulp = require('gulp');
 const mergeStream = require('merge-stream');
 const {jasmine, jasmineBrowser, plumber, processEnv} = require('gulp-load-plugins')();
@@ -7,7 +6,6 @@ const webpack = require('webpack-stream');
 const del = require('del');
 const portastic = require('portastic');
 const minimist = require('minimist');
-const {obj: through} = require('through2');
 
 let port;
 
@@ -20,7 +18,8 @@ const Jasmine = {
     headlessSpecRunnerOptions: {},
     serverOptions: {},
     appGlobs: ['spec/app/**/*_spec.js'],
-    serverGlobs: ['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js']
+    serverGlobs: ['spec/server/**/*.js', 'spec/lib/**/*.js', 'spec/helpers/**/*.js'],
+    tmpDir: 'tmp/jasmine'
   },
 
   install(installOptions = {}) {
@@ -74,32 +73,27 @@ const Jasmine = {
     },
     jasmineRun() {
       const plugin = new (require('gulp-jasmine-browser/webpack/jasmine-plugin'))();
-      const {browserServerOptions, browserSpecRunnerOptions} = Jasmine.installOptions;
-      return Jasmine.appAssets({plugins: [plugin]})
+      const {browserServerOptions, browserSpecRunnerOptions, tmpDir} = Jasmine.installOptions;
+      const stream = Jasmine.appAssets({plugins: [plugin]})
         .pipe(plumber())
         .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
         .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}))
-        .pipe(gulp.dest('tmp/jasmine'));
+      if (!tmpDir) return stream;
+      return stream.pipe(gulp.dest('tmp/jasmine'));
     },
     specAppRun() {
-      const {headlessServerOptions, headlessSpecRunnerOptions} = Jasmine.installOptions;
+      const {headlessServerOptions, headlessSpecRunnerOptions, tmpDir} = Jasmine.installOptions;
       const {file} = minimist(process.argv.slice(2), {string: 'file'});
-      return (port ? gulp.src('tmp/jasmine/**/*') : Jasmine.appAssets({watch: false}))
+      return (port && tmpDir ? gulp.src(`${tmpDir}/**/*`) : Jasmine.appAssets({watch: false}))
         .pipe(jasmineBrowser.specRunner({console: true, ...headlessSpecRunnerOptions}))
-        .pipe(jasmineBrowser.headless({driver: 'chrome', file, port, ...headlessServerOptions}))
-        .pipe(through((data, enc, next) => next(null, data), flush => {
-          port = null;
-          flush();
-        }));
+        .pipe(jasmineBrowser.headless({driver: 'chrome', file, port, ...headlessServerOptions}));
     },
     specServer() {
       const env = processEnv({NODE_ENV: 'test'});
-      return pipe(
-        Jasmine.serverAssets(),
-        env,
-        jasmine({includeStackTrace: true, ...Jasmine.installOptions.serverOptions}),
-        env.restore()
-      );
+      return Jasmine.serverAssets()
+        .pipe(env)
+        .pipe(jasmine({includeStackTrace: true, ...Jasmine.installOptions.serverOptions}))
+        .pipe(env.restore());
     }
   }
 };
