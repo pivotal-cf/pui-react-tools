@@ -26,10 +26,10 @@ const Jasmine = {
     Object.assign(Jasmine.installOptions, installOptions);
     gulp.task('jasmine-clear', Jasmine.tasks.jasmineClear);
     gulp.task('jasmine-detect', Jasmine.tasks.jasmineDetect);
-    gulp.task('jasmine-run', ['jasmine-clear'], Jasmine.tasks.jasmineRun);
-    gulp.task('jasmine', ['jasmine-run']);
-    gulp.task('spec-app-run', ['jasmine-detect'], Jasmine.tasks.specAppRun);
-    gulp.task('spec-app', ['spec-app-run']);
+    gulp.task('jasmine-run', gulp.series('jasmine-clear', Jasmine.tasks.jasmineRun));
+    gulp.task('jasmine', gulp.series('jasmine-run'));
+    gulp.task('spec-app-run', gulp.series('jasmine-detect', Jasmine.tasks.specAppRun));
+    gulp.task('spec-app', gulp.series('spec-app-run'));
     gulp.task('spec-server', Jasmine.tasks.specServer);
   },
 
