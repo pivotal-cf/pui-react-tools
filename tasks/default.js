@@ -1,4 +1,5 @@
 const gulp = require('gulp');
-const runSequence = require('run-sequence');
+import './lint';
+import './jasmine';
 
-gulp.task('default', cb => runSequence('lint', 'spec', cb));
+gulp.task('default', gulp.series('lint', 'spec', done => done()));

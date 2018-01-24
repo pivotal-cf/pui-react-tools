@@ -14,7 +14,7 @@
     "eslint-plugin-react": "^7.3.0",
     "foreman": "^2.0.0",
     "from2": "^2.3.0",
-    "gulp": "^3.9.1",
+    "gulp": "4.0.0",
     "gulp-babel": "^7.0.0",
     "gulp-eslint": "^4.0.0",
     "gulp-if": "^2.0.1",

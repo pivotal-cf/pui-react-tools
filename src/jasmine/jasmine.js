@@ -60,7 +60,7 @@ const Jasmine = {
   },
 
   serverAssets(gulpOptions = {}) {
-    return gulp.src(Jasmine.installOptions.serverGlobs, gulpOptions)
+    return gulp.src(Jasmine.installOptions.serverGlobs, gulpOptions);
   },
 
   tasks: {
@@ -77,7 +77,7 @@ const Jasmine = {
       const stream = Jasmine.appAssets({plugins: [plugin]})
         .pipe(plumber())
         .pipe(jasmineBrowser.specRunner(browserSpecRunnerOptions))
-        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}))
+        .pipe(jasmineBrowser.server({whenReady: plugin.whenReady, ...browserServerOptions}));
       if (!tmpDir) return stream;
       return stream.pipe(gulp.dest('tmp/jasmine'));
     },

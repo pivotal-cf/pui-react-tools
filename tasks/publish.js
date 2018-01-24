@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const npm = require('npm');
 
-gulp.task('publish', ['build'], () => {
+gulp.task('publish', gulp.series('build', () => {
   npm.load({}, (error) => {
     /* eslint-disable no-console */
     if (error) {
@@ -13,4 +13,4 @@ gulp.task('publish', ['build'], () => {
     });
     /* eslint-enable no-console */
   });
-});
+}));
