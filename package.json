@@ -1,6 +1,6 @@
 {
   "name": "pui-react-tools",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "main": "index.js",
   "dependencies": {
@@ -19,7 +19,7 @@
     "gulp-eslint": "^4.0.0",
     "gulp-if": "^2.0.1",
     "gulp-jasmine": "^2.4.0",
-    "gulp-jasmine-browser": "^2.0.1",
+    "gulp-jasmine-browser": "^3.0.0",
     "gulp-load-plugins": "^1.2.4",
     "gulp-plumber": "^1.1.0",
     "gulp-process-env": "^0.0.2",
