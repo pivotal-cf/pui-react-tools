@@ -1,3 +1,5 @@
+# Deprecated, no longer maintainted
+
 # Tools for gulp tasks for React
 
 There are four modules included in pui-react-tools:
