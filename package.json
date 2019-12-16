@@ -12,7 +12,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "del": "^3.0.0",
     "eslint-plugin-react": "^7.3.0",
-    "foreman": "^2.0.0",
+    "foreman": "^3.0.1",
     "from2": "^2.3.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^7.0.0",
